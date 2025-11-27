@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --bg-gradient: #ffffff;
+}
+
+
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-gradient:linear-gradient(to bottom, #25215C 22%,#0FCFD1)
+    
+
+  }
+}
+
+body {
+  background: var(--bg-gradient);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+}
