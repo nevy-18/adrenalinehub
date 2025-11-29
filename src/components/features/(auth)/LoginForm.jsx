@@ -5,63 +5,108 @@ import ForgotPassword from "@/components/ui/ForgotPassword";
 import SignButton from "@/components/ui/SignButton";
 import Homepage from "./Homepage";
 
-export default function LoginForm(){
-    const [showHomePage, SetHomePage] = useState(false);
-    return(
-     <div className="flex flex-col justify-center items-center min-h-screen w-full ">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
-                {showHomePage ? (
-                    <Homepage />
-                ) : (
-                <div className="flex flex-col items-center gap-7 bg-white/10 backdrop-blur-md p-10 rounded-3xl border border-white/20 shadow-2xl w-auto">
-                
+// --- Sub-component to keep the main code clean ---
+const BackgroundLines = () => (
+  <>
+    
+    <div className="absolute top-[9%] right-[0%] w-[300px] md:w-[500px] 2xl:w-[800px] h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent rotate-[134deg] opacity-60" />
+   
+    <div className="absolute top-[10%] right-[40%] w-[300px] md:w-[500px] 2xl:w-[800px] h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent rotate-[134deg] opacity-60" />
+  
+    <div className="absolute top-[10%] right-[70%] w-[300px] md:w-[500px] 2xl:w-[800px] h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent rotate-[134deg] opacity-60" />
+    
+    <div className="absolute top-[25%] left-[25%] w-80 md:w-[500px] 2xl:w-[800px] h-[2px] bg-gradient-to-r from-transparent via-purple-400 to-transparent rotate-[134deg] opacity-70 animate-pulse" />
+    
+    <div className="absolute top-[60%] left-[-50%] w-96 md:w-[600px] 2xl:w-[1000px] h-[3px] bg-gradient-to-r from-transparent via-cyan-300 to-transparent rotate-[134deg] opacity-60 blur-[1px]" />
+    
+    <div className="absolute bottom-40 right-10 w-80 md:w-[500px] 2xl:w-[900px] h-[1px] bg-gradient-to-r from-transparent via-blue-200 to-transparent rotate-[134deg] opacity-50" />
+    
+    <div className="absolute top-[80%] left-[70%] w-96 md:w-[600px] 2xl:w-[1000px] h-[3px] bg-gradient-to-r from-transparent via-cyan-300 to-transparent rotate-[134deg] opacity-60 blur-[1px]" />
 
-                <h1 className="text-4xl font-bold text-white mb-4 tracking-wider">Login</h1>
-                    <div className="flex flex-col gap-6 w-full">
-                        
+    <div className="absolute top-[80%] left-[50%] w-96 md:w-[600px] 2xl:w-[1000px] h-[3px] bg-gradient-to-r from-transparent via-cyan-300 to-transparent rotate-[134deg] opacity-60 blur-[1px]" />
+   
+    <div className="absolute top-[70%] left-[20%] w-96 md:w-[600px] 2xl:w-[1000px] h-[3px] bg-gradient-to-r from-transparent via-cyan-300 to-transparent rotate-[134deg] opacity-60 blur-[1px]" />
+    
+    <div className="absolute bottom-80 right-20 w-[300px] md:w-[500px] 2xl:w-[800px] h-[1px] bg-gradient-to-r from-transparent via-blue-200 to-transparent rotate-[134deg] opacity-50" />
+  </>
+);
 
-                        <input
-                            type="text"
-                            placeholder="Username"
-                            className="bg-white/20 backdrop-blur-sm text-white placeholder-gray-300 rounded-2xl 
-                            p-4 outline-none border border-white/30 w-auto h-auto text-[22px] transition-all focus:bg-white/30 focus:border-white/60"
-                        />
-
-                  
-                        <input
-                            type="text"
-                            placeholder="Email"
-                            className="bg-white/20 backdrop-blur-sm text-white placeholder-gray-300 rounded-2xl 
-                            p-4 outline-none border border-white/30 w-auto h-auto transition-all focus:bg-white/30 focus:border-white/60 text-[22px]"
-                        />
+export default function LoginForm() {
+  const [showHomePage, setHomePage] = useState(false);
 
 
-                        <input
-                            type="password"
-                            placeholder="Password"
-                            className="bg-white/20 backdrop-blur-sm text-white placeholder-gray-300 rounded-2xl 
-                            p-4 outline-none border border-white/30 w-auto h-auto text-xl transition-all focus:bg-white/30 focus:border-white/60 text-[22px]"
-                        />
+  if (showHomePage) {
+    return <Homepage />;
+  }
 
-                       
-                        <div className="w-full flex justify-left w-auto h-auto">
-                            <ForgotPassword 
-                                onClick={() => alert('kawawa ka naman di mo alam password mo')} 
-                            />
-                        </div>
+  return (
+    <div className="fixed inset-0 w-full h-[100dvh] bg-gradient-to-b from-[#1a1a40] to-[#22d3ee] flex items-center justify-center overflow-hidden">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      
+   
+      <BackgroundLines />
 
-                        
-                        <LogButton onClick={() => SetHomePage(true)} />
-                             <div className="mt-4">
-                    <SignButton onClick={() => alert('wala kang acc?')} />
-                </div>
-                    </div>
-                    </div>
-                )}
-
-               
-               
+      {/* --- CONTAINER --- */}
+      
+      <div className="relative z-10 w-[90%] md:w-full max-w-md md:max-w-2xl 2xl:max-w-4xl flex flex-col items-center transition-all duration-300">
+        
+        {/* LOGO AREA */}
+        <div className="mb-8 md:mb-10 2xl:mb-[-10] text-center relative flex flex-col items-center">
+          <img 
+            src="/images/logo.png" 
+            alt="Adrenaline Hub Logo"
             
+            className="relative z-20 w-64 md:w-[500px] 2xl:w-[800px] mx-auto drop-shadow-lg transition-all" 
+          />
+          {/* Platform Glow */}
+          <div className="absolute z-10 bottom-[60px] 2xl:bottom-[60px] w-[140px] md:w-[450px] 2xl:w-[450px] h-[25px] 2xl:h-[50px] bg-white/20 rounded-[100%] blur-md" />
         </div>
-    );
+
+        {/*  CONTAINER */}
+        <div className="w-full space-y-4 md:space-y-6 2xl:space-y-12">
+          
+          
+          <div className="bg-[#1f2937]/80 backdrop-blur-sm rounded-xl p-4 2xl:p-8 border border-white/10 shadow-lg">
+            <p className="text-gray-400 text-sm md:text-base 2xl:text-2xl font-medium mb-1">Email address</p>
+            <input 
+              type="text" 
+              placeholder="name@example.com" 
+              className="bg-transparent w-full text-white outline-none text-base md:text-xl 2xl:text-4xl placeholder-gray-500" 
+            />
+          </div>
+
+          
+          <div className="bg-[#1f2937]/80 backdrop-blur-sm rounded-xl p-4 2xl:p-8 border border-white/10 shadow-lg">
+            <p className="text-gray-400 text-sm md:text-base 2xl:text-2xl font-medium mb-1">Password</p>
+            <input 
+              type="password" 
+              placeholder="••••••••" 
+              className="bg-transparent w-full text-white outline-none text-base md:text-xl 2xl:text-4xl placeholder-gray-500" 
+            />
+          </div>
+
+         
+          <div className="flex">
+            <ForgotPassword />
+          </div>
+
+       
+          <LogButton onClick={() => setHomePage(true)} />
+
+          
+          <div className="flex items-center gap-4 py-2 2xl:py-4">
+            <div className="h-px bg-white/20 flex-1" />
+            <span className="text-gray-400 text-sm md:text-lg 2xl:text-2xl font-medium">OR</span>
+            <div className="h-px bg-white/20 flex-1" />
+          </div>
+
+          {/* Sign Up Button */}
+          <div>
+            <SignButton />
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
 }

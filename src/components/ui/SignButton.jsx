@@ -2,7 +2,8 @@ export default function SignButton({onClick}){
     return(
         <button
          onClick={onClick}
-        className="text-[32px] bg-[#0082F4] text-white w-290 h-35 rounded-[40px] mt-3 "
+        className= "p-4 2xl:p-8 w-full text-base md:text-xl 2xl:text-4xl bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 rounded-xl shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all"
+                
         >SignUp</button>
     )
      
