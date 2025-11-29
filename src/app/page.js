@@ -8,18 +8,22 @@ import { useState } from "react";
 export default function Home() {
   const [showLogin,setshowLogin] = useState(false);
   return (
+    
     <div>
       
-    <h1>hello</h1>
+   <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
     {showLogin ? (
     <LoginForm/>
     
     ):(
+      <div className="">
       <Button onClick={() => setshowLogin(true)}/>
+         </div>
     )}
-    
+ 
     </div>
     
 
   );
+ 
 }
