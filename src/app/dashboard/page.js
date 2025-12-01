@@ -1,7 +1,6 @@
 'use client'
 import Image from "next/image";
-import Button from '@/components/ui/Button.jsx';
-import LoginForm from '@/components/features/(auth)/LoginForm'
+import LoginForm from '@/app/login/LoginForm'
 import { useState } from "react";
 
 
@@ -12,12 +11,21 @@ export default function Home() {
     <div>
       
    <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+    
     {showLogin ? (
     <LoginForm/>
     
     ):(
+      
       <div className="">
-      <Button onClick={() => setshowLogin(true)}/>
+      <div className="h-screen flex flex-col justify-end items-center pb-75">
+        <button
+        onClick={() => {setshowLogin(true)}}
+        className="bg-[#6C90A7] text-white px-70 py-12 rounded-[40px]"
+        >
+            Get Started
+        </button>
+        </div>
          </div>
     )}
  

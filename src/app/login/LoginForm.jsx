@@ -1,9 +1,6 @@
 'use client';
 import { useState } from "react";
-import LogButton from "@/components/ui/logButton";
-import ForgotPassword from "@/components/ui/ForgotPassword";
-import SignButton from "@/components/ui/SignButton";
-import Homepage from "./Homepage";
+import Homepage from "../homepage/Homepage";
 
 // --- Sub-component to keep the main code clean ---
 const BackgroundLines = () => (
@@ -33,6 +30,14 @@ const BackgroundLines = () => (
 
 export default function LoginForm() {
   const [showHomePage, setHomePage] = useState(false);
+  const loginclick =() =>{
+    setHomePage(true)
+  }
+
+  const placeholderClick = () => {
+    console.log("Feature coming soon!");
+  };
+
 
 
   if (showHomePage) {
@@ -87,11 +92,20 @@ export default function LoginForm() {
 
          
           <div className="flex">
-            <ForgotPassword />
+            <u 
+    onClick={placeholderClick}
+        className="text-[blue] text-[24px] ml-5 mt-3 cursor-pointer"
+    >
+        Forgot Password
+    </u>
           </div>
 
        
-          <LogButton onClick={() => setHomePage(true)} />
+         <button
+         onClick={loginclick}  
+         className="  p-4 2xl:p-8 w-full text-base md:text-xl 2xl:text-4xl bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 rounded-xl shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all">
+                Login
+            </button>
 
           
           <div className="flex items-center gap-4 py-2 2xl:py-4">
@@ -102,7 +116,11 @@ export default function LoginForm() {
 
           {/* Sign Up Button */}
           <div>
-            <SignButton />
+           <button
+         onClick={placeholderClick}
+        className= "p-4 2xl:p-8 w-full text-base md:text-xl 2xl:text-4xl bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 rounded-xl shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all"
+                
+        >SignUp</button>
           </div>
 
         </div>
