@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Homepage from "../homepage/Homepage";
 
-// --- Sub-component to keep the main code clean ---
+
 const BackgroundLines = () => (
   <>
     
