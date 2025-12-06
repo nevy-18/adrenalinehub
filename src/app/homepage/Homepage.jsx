@@ -82,7 +82,7 @@ const QuickViewModal = ({ product, onClose }) => {
           </p>
 
           <div className="flex items-end gap-4 mb-8 border-b border-gray-700 pb-8">
-             <span className="text-4xl font-bold text-white">${product.price}</span>
+             <span className="text-4xl font-bold text-white">{product.price}</span>
              <span className="text-gray-500 line-through mb-1 text-lg">${Math.floor(product.price * 1.2)}</span>
           </div>
 
@@ -234,7 +234,7 @@ export default function Homepage() {
                         </div>
                         <p className="text-gray-400 text-xs 2xl:text-sm">Pro Equipment</p>
                         <div className="flex justify-between items-center mt-2 2xl:mt-4">
-                          <span className="text-cyan-400 font-bold text-lg 2xl:text-2xl">${item.price}</span>
+                          <span className="text-cyan-400 font-bold text-lg 2xl:text-2xl">{item.price}</span>
                           <button className="bg-white/10 hover:bg-cyan-500 hover:text-[#1a1a40] p-2 2xl:p-3 rounded-lg transition-colors">
                             <ShoppingCart className="w-4 h-4 2xl:w-6 2xl:h-6" />
                           </button>
