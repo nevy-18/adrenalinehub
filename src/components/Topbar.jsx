@@ -63,7 +63,7 @@ const Topbar = ({onCartClick, searchValue, onSearchChange}) => {
       </div>
 
       {/* Search Bar Section */}
-      <div className="hidden md:block w-1/3 lg:w-2/5 2xl:w-1/2 relative group">
+      <div className="flex-1 mx-4 lg:w-2/5 2xl:w-1/2 relative group">
         <div className={`flex items-center bg-white/10 rounded-full px-6 py-3 md:py-4 2xl:px-10 2xl:py-6 border transition-all duration-300 ${isSearchFocused ? 'border-cyan-400 bg-[#1a1a40] shadow-xl shadow-cyan-500/20' : 'border-white/10 hover:border-white/30'}`}>
           <Search className={`w-6 h-6 lg:w-7 lg:h-7 2xl:w-10 2xl:h-10 mr-4 transition-colors ${isSearchFocused ? 'text-cyan-400' : 'text-gray-400'}`} />
           <input 

@@ -1,6 +1,7 @@
 'use client';
 import { useState } from "react";
 import Homepage from "../homepage/Homepage";
+import SignUp from "../signup/SignUp";
 
 
 const BackgroundLines = () => (
@@ -30,22 +31,30 @@ const BackgroundLines = () => (
 
 export default function LoginForm() {
   const [showHomePage, setHomePage] = useState(false);
+  const [showsignup,setSignup] = useState(false);
+
   const loginclick =() =>{
     setHomePage(true)
   }
-
+  const signUpclick =() =>{
+    setSignup(true)
+  }
   const placeholderClick = () => {
     console.log("Feature coming soon!");
   };
 
-
-
   if (showHomePage) {
     return <Homepage />;
   }
+  
+  
+  if (showsignup){
+    return <SignUp/>;
+  }
+  
 
   return (
-    <div className="fixed inset-0 w-full h-[100dvh] bg-gradient-to-b from-[#1a1a40] to-[#22d3ee] flex items-center justify-center overflow-hidden">
+    <div className="fixed inset-0 w-full h-[100dvh] bg-gradient-to-b from-[#1a1a40] to-[#22d3ee] flex items-center justify-center overflow-hidden p-4">
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       
    
@@ -53,7 +62,7 @@ export default function LoginForm() {
 
       {/* --- CONTAINER --- */}
       
-      <div className="relative z-10 w-[90%] md:w-full max-w-md md:max-w-2xl 2xl:max-w-4xl flex flex-col items-center transition-all duration-300">
+      <div className="relative z-10 w-full max-w-sm md:max-w-md 2xl:max-w-4xl flex flex-col items-center transition-all duration-300">
         
         {/* LOGO AREA */}
         <div className="mb-8 md:mb-10 2xl:mb-[-10] text-center relative flex flex-col items-center">
@@ -61,7 +70,7 @@ export default function LoginForm() {
             src="/images/logo.png" 
             alt="Adrenaline Hub Logo"
             
-            className="relative z-20 w-64 md:w-[500px] 2xl:w-[800px] mx-auto drop-shadow-lg transition-all" 
+            className="relative z-20 w-48 md:w-64 2xl:w-[800px] mx-auto drop-shadow-lg transition-all" 
           />
           {/* Platform Glow */}
           <div className="absolute z-10 bottom-[60px] 2xl:bottom-[60px] w-[140px] md:w-[450px] 2xl:w-[450px] h-[25px] 2xl:h-[50px] bg-white/20 rounded-[100%] blur-md" />
@@ -117,7 +126,7 @@ export default function LoginForm() {
           {/* Sign Up Button */}
           <div>
            <button
-         onClick={placeholderClick}
+         onClick={signUpclick}
         className= "p-4 2xl:p-8 w-full text-base md:text-xl 2xl:text-4xl bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 rounded-xl shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all"
                 
         >SignUp</button>

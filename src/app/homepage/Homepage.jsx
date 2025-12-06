@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import Topbar from '@/components/Topbar';
 import { Product } from '@/app/data/Product';
 import CartPage from '@/app/cart/page';
+
+// --- ICONS ---
 const ArrowLeft = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
     <path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>
@@ -12,26 +14,124 @@ const ArrowLeft = (props) => (
 const ShoppingCart = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
 );
+
 const Star = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
 );
 
+const X = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+);
+
+// --- QUICK VIEW MODAL COMPONENT ---
+const QuickViewModal = ({ product, onClose }) => {
+  if (!product) return null;
+
+  return (
+    // Z-INDEX set to 999 to ensure it sits on top of everything
+    <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div 
+        className="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity" 
+        onClick={onClose} 
+      ></div>
+
+      {/* Modal Content */}
+      <div className="relative bg-[#1e293b] w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row border border-cyan-500/30 animate-in fade-in zoom-in-95 duration-200">
+        
+        {/* Close Button */}
+        <button 
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-400 hover:text-white z-10 hover:bg-white/10 p-1 rounded-full transition-colors"
+        >
+          <X className="w-6 h-6" />
+        </button>
+
+        {/* Left: Image Area */}
+        <div className="w-full md:w-1/2 bg-gradient-to-br from-gray-900 to-black flex items-center justify-center p-8 relative">
+           <span className="absolute text-white/5 text-6xl font-black uppercase -rotate-12 select-none">
+              {product.category || "GYM"}
+           </span>
+           {/* We attempt to use the image as a class (if your data uses classes) OR as a src (if URL) */}
+           <div className={`w-full h-64 md:h-full ${product.image?.includes('http') ? '' : product.image} bg-contain bg-center bg-no-repeat relative z-10`}
+                style={product.image?.includes('http') ? { backgroundImage: `url(${product.image})` } : {}}
+           ></div>
+        </div>
+
+        {/* Right: Details Area */}
+        <div className="w-full md:w-1/2 p-6 md:p-10 flex flex-col justify-center text-left">
+          <span className="text-cyan-400 text-sm font-bold tracking-widest uppercase mb-2">
+            {product.category || "Equipment"}
+          </span>
+          
+          <h2 className="text-3xl md:text-4xl font-black text-white mb-2 leading-tight">
+            {product.name}
+          </h2>
+
+          <div className="flex items-center gap-2 mb-6 text-yellow-400">
+             <div className="flex">
+               {[...Array(5)].map((_, i) => (
+                 <Star key={i} className={`w-4 h-4 ${i < Math.floor(product.rating) ? "fill-current" : "text-gray-600"}`} />
+               ))}
+             </div>
+             <span className="text-gray-300 text-sm ml-2">({product.rating} Reviews)</span>
+          </div>
+
+          <p className="text-gray-300 text-base leading-relaxed mb-8">
+            {product.description || "Take your workout to the next level with this premium equipment. Built for durability and performance, it's the perfect addition to any home gym setup."}
+          </p>
+
+          <div className="flex items-end gap-4 mb-8 border-b border-gray-700 pb-8">
+             <span className="text-4xl font-bold text-white">${product.price}</span>
+             <span className="text-gray-500 line-through mb-1 text-lg">${Math.floor(product.price * 1.2)}</span>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <button className="w-full bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-lg py-4 rounded-xl shadow-[0_0_20px_rgba(34,211,238,0.4)] hover:shadow-[0_0_30px_rgba(34,211,238,0.6)] transition-all active:scale-95">
+               BUY NOW
+            </button>
+            <button className="w-full bg-transparent border border-gray-600 hover:border-white text-white font-semibold py-4 rounded-xl flex items-center justify-center gap-2 transition-all hover:bg-white/5">
+               <ShoppingCart className="w-5 h-5" />
+               Add to Cart
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+// --- MAIN HOMEPAGE ---
 export default function Homepage() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentView, setCurrentView] = useState("home"); 
+  
+  // 1. STATE FOR MODAL
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const categories = ["All", "Strength", "Cardio", "Accessories", "Recovery"];
 
- const filteredProducts = Product.filter(item => {
+  const filteredProducts = Product.filter(item => {
     const matchesCategory = selectedCategory === "All" ? true : item.category === selectedCategory;
     const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
   return (
     <div className="h-[100dvh] w-full bg-gradient-to-b from-[#1a1a40] to-[#22d3ee] text-white overflow-y-auto overflow-x-hidden">
       <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
       
+      {/* 2. RENDER MODAL HERE (If a product is selected) */}
+      {selectedProduct && (
+        <QuickViewModal 
+          product={selectedProduct} 
+          onClose={() => setSelectedProduct(null)} 
+        />
+      )}
+
       <div className="py-4 text-white">
         <Topbar 
           onCartClick={() => setCurrentView("cart")}
@@ -112,8 +212,15 @@ export default function Homepage() {
                     <div key={item.id} className="bg-[#1f2937]/60 backdrop-blur-sm rounded-2xl p-3 md:p-4 2xl:p-6 border border-white/10 hover:border-cyan-400/50 hover:-translate-y-2 transition-all duration-300 group shadow-lg flex flex-col justify-between">
                       <div className={`w-full aspect-square ${item.image} rounded-xl mb-3 2xl:mb-5 relative overflow-hidden flex items-center justify-center`}>
                         <span className="text-white/20 font-black italic text-xl 2xl:text-3xl uppercase -rotate-12 select-none">{item.name.split(" ")[0]}</span>
+                        
+                        {/* 3. FIXED BUTTON TRIGGER (Added onClick) */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4">
-                          <span className="bg-white text-black text-xs 2xl:text-base font-bold px-3 py-1 2xl:px-5 2xl:py-2 rounded-full cursor-pointer hover:bg-cyan-400 hover:text-black transition-colors">Quick View</span>
+                          <button 
+                             onClick={() => setSelectedProduct(item)} 
+                             className="bg-white text-black text-xs 2xl:text-base font-bold px-3 py-1 2xl:px-5 2xl:py-2 rounded-full cursor-pointer hover:bg-cyan-400 hover:text-black transition-colors"
+                          >
+                            Quick View
+                          </button>
                         </div>
                       </div>
 
@@ -127,7 +234,7 @@ export default function Homepage() {
                         </div>
                         <p className="text-gray-400 text-xs 2xl:text-sm">Pro Equipment</p>
                         <div className="flex justify-between items-center mt-2 2xl:mt-4">
-                          <span className="text-cyan-400 font-bold text-lg 2xl:text-2xl">{item.price}</span>
+                          <span className="text-cyan-400 font-bold text-lg 2xl:text-2xl">${item.price}</span>
                           <button className="bg-white/10 hover:bg-cyan-500 hover:text-[#1a1a40] p-2 2xl:p-3 rounded-lg transition-colors">
                             <ShoppingCart className="w-4 h-4 2xl:w-6 2xl:h-6" />
                           </button>
