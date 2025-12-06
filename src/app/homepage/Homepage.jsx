@@ -23,10 +23,11 @@ export default function Homepage() {
 
   const categories = ["All", "Strength", "Cardio", "Accessories", "Recovery"];
 
-  const filteredProducts = selectedCategory === "All" 
-    ? Product 
-    : Product.filter(item => item.category === selectedCategory);
-
+ const filteredProducts = Product.filter(item => {
+    const matchesCategory = selectedCategory === "All" ? true : item.category === selectedCategory;
+    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
   return (
     <div className="h-[100dvh] w-full bg-gradient-to-b from-[#1a1a40] to-[#22d3ee] text-white overflow-y-auto overflow-x-hidden">
       <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
@@ -35,6 +36,8 @@ export default function Homepage() {
         <Topbar 
           onCartClick={() => setCurrentView("cart")}
           onHomeClick={() => setCurrentView("home")}
+          searchValue={searchQuery}
+          onSearchChange={setSearchQuery}
         />
       </div>
       

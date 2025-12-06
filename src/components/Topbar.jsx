@@ -1,8 +1,7 @@
 import { useState } from 'react';
-// Corrected import path based on your previous fix
 import { Product } from '@/app/data/Product';
-import CartPage from '@/app/cart/page';
-import Homepage from '@/app/homepage/Homepage';
+import { XIcon } from 'lucide-react';
+
 
 
 // --- Icon Components ---
@@ -33,12 +32,9 @@ const Trash2 = (props) => (
 const ArrowLeft = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
 );
+<XIcon/>
 
-
-const Topbar = ({onCartClick}) => {
-  // CHANGED: Local state for search (Homepage doesn't need to know about this)
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+const Topbar = ({onCartClick, searchValue, onSearchChange}) => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   // Fallback "Suggested" products - displayed when search is empty
@@ -50,27 +46,20 @@ const Topbar = ({onCartClick}) => {
   ].filter(Boolean) : [];
 
   // Dropdown Logic
-  const searchResults = searchQuery && typeof Product !== 'undefined'
-    ? Product.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 5)
+  const searchResults = searchValue && typeof Product !== 'undefined'
+    ? Product.filter(p => p.name.toLowerCase().includes(searchValue.toLowerCase())).slice(0, 5)
     : defaultSuggestions;
 
-  const isSearchEmpty = searchQuery.length === 0;
+  const isSearchEmpty = !searchValue || searchValue.length === 0;
   const hasResults = searchResults.length > 0;
 
   return (
     <nav className="fixed top-0 z-50 w-full bg-[#1a1a40]/90 backdrop-blur-md border-b border-white/10 px-4 md:px-8 2xl:px-16 py-3 2xl:py-6 flex items-center justify-between transition-all">
 
       {/* Logo Section */}
-      <div className="flex items-center gap-4">
-        <button className="p-2 hover:bg-white/10 rounded-full md:hidden">
-          <Menu className="w-6 h-6 text-cyan-400" />
-        </button>
-
-        <div className="text-xl md:text-2xl 2xl:text-4xl font-black italic tracking-wider cursor-pointer"
-        onClick={Homepage}
-        >
+      <div className="flex items-center  text-xl md:text-2xl 2xl:text-4xl font-black italic tracking-wider cursor-pointer">
+        
           ADRENALINE<span className="text-cyan-400">HUB</span>
-        </div>
       </div>
 
       {/* Search Bar Section */}
@@ -81,11 +70,22 @@ const Topbar = ({onCartClick}) => {
             type="text" 
             placeholder="Search for equipment..." 
             className="bg-transparent border-none outline-none text-lg lg:text-xl 2xl:text-3xl w-full placeholder-gray-400 text-white focus:ring-0 transition-all h-full" // size of placeholder
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchValue || ""} 
+            onChange={(e) => onSearchChange(e.target.value)} // parte to ng connection ng filtering
             onFocus={() => setIsSearchFocused(true)}
-            onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)} 
+            onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
           />
+          {!isSearchEmpty && (
+            <button 
+              onClick={() => {
+                onSearchChange(""); 
+          
+              }}
+              className="text-gray-400 hover:text-white transition-colors"
+            >
+              <XIcon className="w-5 h-5 2xl:w-8 2xl:h-8" />
+            </button>
+          )}
         </div>
 
         {/* Dynamic Dropdown */}
@@ -113,7 +113,7 @@ const Topbar = ({onCartClick}) => {
                     className="flex items-center gap-5 2xl:gap-8 p-4 2xl:p-6 hover:bg-white/5 rounded-2xl cursor-pointer group/item transition-colors"
                     onMouseDown={(e) => e.preventDefault()} 
                     onClick={() => {
-                      setSearchQuery(product.name);
+                      onSearchChange(product.name);
                       setIsSearchFocused(false);
                     }}
                   >
@@ -129,13 +129,13 @@ const Topbar = ({onCartClick}) => {
                 ))
               ) : (
                 <div className="py-6 text-center flex flex-col items-center text-gray-400">
-                  <span className="text-sm">No products found for "{searchQuery}"</span>
+                  <span className="text-sm">No products found for "{searchValue}"</span>
                 </div>
               )}
               
               <div className="mt-3 pt-3 2xl:pt-6 border-t border-white/5 text-center">
                  <button className="text-sm md:text-base 2xl:text-xl text-gray-500 hover:text-cyan-400 transition-colors py-2">
-                   {isSearchEmpty ? "View all recommendations" : `See all results for "${searchQuery}"`}
+                   {isSearchEmpty ? "View all recommendations" : `See all results for "${searchValue}"`}
                  </button>
               </div>
             </div>
