@@ -1,14 +1,8 @@
 'use client';
 import React, { useState, useRef, useEffect } from "react";
 import LoginForm from '@/app/login/LoginForm';
+import { CheckCircle, Users, Zap, Mail } from "lucide-react";
 
-// --- ICONS ---
-const CheckCircle = (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>;
-const Users = (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>;
-const Zap = (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>;
-const Mail = (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>;
-
-// --- BEFORE/AFTER SLIDER COMPONENT ---
 const BeforeAfterSlider = () => {
   const [sliderPosition, setSliderPosition] = useState(50); 
   const [isDragging, setIsDragging] = useState(false);
@@ -55,18 +49,37 @@ const BeforeAfterSlider = () => {
       onMouseDown={handleMouseDown}
       onTouchStart={handleMouseDown}
     >
-      <div className="absolute inset-0 bg-gray-900 flex items-center justify-center">
-         <span className="text-white opacity-20 text-9xl font-black">AFTER</span>
+      {/* 1. AFTER IMAGE (Background Layer) - marcoline.jpg */}
+      <div className="absolute inset-0 bg-gray-900">
+         <img 
+            src="/marcoline.jpg" 
+            alt="After" 
+            className="w-full h-full object-cover object-top opacity-80" 
+         />
+         <div className="absolute bottom-10 right-10 bg-black/50 px-4 py-2 rounded text-white font-bold">
+            AFTER
+         </div>
       </div>
+
+      {/* 2. BEFORE IMAGE (Foreground Layer - Clipped) - marpayat.jpg */}
       <div 
-        className="absolute inset-0 bg-gray-200 flex items-center justify-center border-r-4 border-white"
+        className="absolute inset-0 bg-gray-200 border-r-4 border-white"
         style={{ 
           clipPath: `inset(0 ${100 - sliderPosition}% 0 0)`,
           transition: isDragging ? 'none' : 'clip-path 0.1s ease-out' 
         }}
       >
-        <span className="text-black opacity-20 text-9xl font-black">BEFORE</span>
+        <img 
+            src="/marpayat.png" 
+            alt="Before" 
+            className="w-full h-full object-cover object-top" 
+         />
+         <div className="absolute bottom-10 left-10 bg-black/50 px-4 py-2 rounded text-white font-bold">
+            BEFORE
+         </div>
       </div>
+
+      {/* Slider Handle */}
       <div 
         className="absolute inset-y-0"
         style={{ left: `${sliderPosition}%` }}
