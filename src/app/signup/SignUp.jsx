@@ -1,3 +1,4 @@
+import LoginForm from '../login/LoginForm';
 import React, { useState } from 'react';
 const BackgroundLines = () => (
   <>
@@ -25,6 +26,7 @@ const BackgroundLines = () => (
 );
 
 export default function SignUp() {
+    const [showLoginForm, setLoginForm] = useState(false);
   
   // State to handle form inputs
   const [formData, setFormData] = useState({
@@ -33,6 +35,12 @@ export default function SignUp() {
     password: '',
     confirmPassword: ''
   });
+    const haveclick =() =>{
+    setLoginForm(true)
+  }
+   if (showLoginForm) {
+      return <LoginForm />;
+    }
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -47,7 +55,7 @@ export default function SignUp() {
   return (
     
 
-    // Outer container for centering (optional, remove if placing inside a specific layout)
+   
    <div className="fixed inset-0 w-full h-[100dvh] bg-gradient-to-b from-[#1a1a40] to-[#22d3ee] flex items-center justify-center overflow-hidden">
       <meta name="viewport" content="width=device-width, initial-scale=1.0" /> 
       <BackgroundLines />
@@ -116,10 +124,11 @@ export default function SignUp() {
           </button>
         </form>
 
-        {/* Login Link */}
+        {/* Login click*/}
         <p className="text-center mt-6 text-[#A9A9A9] text-sm">
           Already have an account?{' '}
-          <a href="/login" className="text-white font-semibold hover:underline">
+          <a onClick={haveclick}
+           className="text-white font-semibold hover:underline">
             Log in
           </a>
         </p>
