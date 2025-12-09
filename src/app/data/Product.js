@@ -1,205 +1,57 @@
+
 export const Product = [
-  // --- STRENGTH (Ids 1-25) ---
-  { 
-    id: 1, 
-    name: "Olympic Barbell", 
-    category: "Strength", 
-    price: "$280 - $299", 
-    rating: 4.9, 
-    image: "bg-gradient-to-br from-gray-700 to-gray-900",
-    variants: [
-      { name: "15kg (Womens)", price: 280 },
-      { name: "20kg (Mens)", price: 299 }
-    ]
-  },
-  { id: 2, name: "Power Rack", category: "Strength", price: "$699", rating: 4.8, image: "bg-gradient-to-br from-zinc-700 to-black" }, 
-  { 
-    id: 3, 
-    name: "Pro Kettlebell", 
-    category: "Strength", 
-    price: "$30 - $110", 
-    rating: 4.8, 
-    image: "bg-gradient-to-br from-stone-600 to-stone-800",
-    variants: [
-      { name: "4kg", price: 30 },
-      { name: "8kg", price: 45 },
-      { name: "12kg", price: 60 },
-      { name: "16kg", price: 75 },
-      { name: "20kg", price: 90 },
-      { name: "24kg", price: 100 },
-      { name: "32kg", price: 110 }
-    ]
-  },
-  { id: 4, name: "Adjustable Bench", category: "Strength", price: "$250", rating: 4.7, image: "bg-gradient-to-br from-slate-600 to-slate-800" },
-  { 
-    id: 5, 
-    name: "Dumbbell Pair", 
-    category: "Strength", 
-    price: "$40 - $180", 
-    rating: 4.9, 
-    image: "bg-gradient-to-br from-gray-800 to-black",
-    variants: [
-      { name: "5lb", price: 40 },
-      { name: "10lb", price: 60 },
-      { name: "15lb", price: 80 },
-      { name: "25lb", price: 110 },
-      { name: "35lb", price: 140 },
-      { name: "50lb", price: 180 }
-    ]
-  },
-  { id: 6, name: "Squat Stand", category: "Strength", price: "$350", rating: 4.6, image: "bg-gradient-to-br from-neutral-700 to-neutral-900" },
-  { id: 7, name: "Hex Trap Bar", category: "Strength", price: "$180", rating: 4.7, image: "bg-gradient-to-br from-zinc-600 to-zinc-800" },
-  { 
-    id: 8, 
-    name: "Bumper Plate Pair", 
-    category: "Strength", 
-    price: "$60 - $220", 
-    rating: 4.8, 
-    image: "bg-gradient-to-br from-emerald-700 to-emerald-900",
-    variants: [
-      { name: "5kg", price: 60 },
-      { name: "10kg", price: 90 },
-      { name: "15kg", price: 130 },
-      { name: "20kg", price: 170 },
-      { name: "25kg", price: 220 }
-    ]
-  },
-  { id: 9, name: "Dip Station", category: "Strength", price: "$120", rating: 4.5, image: "bg-gradient-to-br from-gray-600 to-gray-800" },
-  { id: 10, name: "Pull-Up Bar", category: "Strength", price: "$45", rating: 4.4, image: "bg-gradient-to-br from-slate-700 to-black" },
-  { id: 11, name: "Smith Machine", category: "Strength", price: "$1200", rating: 4.6, image: "bg-gradient-to-br from-stone-700 to-stone-900" },
-  { id: 12, name: "Leg Press Machine", category: "Strength", price: "$1500", rating: 4.9, image: "bg-gradient-to-br from-red-900 to-black" },
-  { id: 13, name: "Cable Crossover", category: "Strength", price: "$1800", rating: 4.8, image: "bg-gradient-to-br from-blue-900 to-black" },
-  { id: 14, name: "Preacher Curl Bench", category: "Strength", price: "$220", rating: 4.5, image: "bg-gradient-to-br from-gray-500 to-gray-700" },
-  { 
-    id: 15, 
-    name: "Medicine Ball", 
-    category: "Strength", 
-    price: "$30 - $90", 
-    rating: 4.6, 
-    image: "bg-gradient-to-br from-orange-700 to-red-800",
-    variants: [
-      { name: "3kg", price: 30 },
-      { name: "5kg", price: 45 },
-      { name: "7kg", price: 60 },
-      { name: "9kg", price: 75 },
-      { name: "12kg", price: 90 }
-    ]
-  },
-  { 
-    id: 16, 
-    name: "Battle Ropes", 
-    category: "Strength", 
-    price: "$80 - $130", 
-    rating: 4.7, 
-    image: "bg-gradient-to-br from-yellow-800 to-yellow-950", 
-    variants: [
-      { name: "30ft (1.5\")", price: 80 },
-      { name: "40ft (1.5\")", price: 100 },
-      { name: "50ft (2.0\")", price: 130 }
-    ]
-  }, 
-  { 
-    id: 17, 
-    name: "Tactical Weight Vest", 
-    category: "Strength", 
-    price: "$65 - $105", 
-    rating: 4.5, 
-    image: "bg-gradient-to-br from-neutral-800 to-black", 
-    variants: [
-      { name: "10kg Plate", price: 65 },
-      { name: "15kg Plate", price: 85 },
-      { name: "20kg Plate", price: 105 }
-    ]
-  }, 
-  { id: 18, name: "Landmine Attachment", category: "Strength", price: "$35", rating: 4.4, image: "bg-gradient-to-br from-gray-400 to-gray-600" },
-  { id: 19, name: "EZ Curl Bar", category: "Strength", price: "$75", rating: 4.6, image: "bg-gradient-to-br from-zinc-500 to-zinc-700" },
-  { id: 20, name: "Plate Tree", category: "Strength", price: "$85", rating: 4.3, image: "bg-gradient-to-br from-slate-500 to-slate-700" },
-  { id: 21, name: "Calf Raise Block", category: "Strength", price: "$40", rating: 4.2, image: "bg-gradient-to-br from-stone-500 to-stone-700" },
-  { id: 22, name: "Power Tower", category: "Strength", price: "$180", rating: 4.5, image: "bg-gradient-to-br from-gray-700 to-gray-900" },
-  { id: 23, name: "Sled Push", category: "Strength", price: "$250", rating: 4.7, image: "bg-gradient-to-br from-red-700 to-red-900" },
-  { 
-    id: 24, 
-    name: "Sandbag Trainer", 
-    category: "Strength", 
-    price: "$55 - $95", 
-    rating: 4.4, 
-    image: "bg-gradient-to-br from-yellow-600 to-yellow-800", 
-    variants: [
-      { name: "10kg", price: 55 },
-      { name: "20kg", price: 65 },
-      { name: "30kg", price: 75 },
-      { name: "40kg", price: 85 },
-      { name: "50kg", price: 95 }
-    ]
-  }, 
-  { 
-    id: 25, 
-    name: "Grip Strengthener", 
-    category: "Strength", 
-    price: "$15 - $25", 
-    rating: 4.1, 
-    image: "bg-gradient-to-br from-blue-400 to-blue-600", 
-    variants: [
-      { name: "100lb", price: 15 },
-      { name: "150lb", price: 18 },
-      { name: "200lb", price: 20 },
-      { name: "250lb", price: 22 },
-      { name: "300lb", price: 25 }
-    ]
-  }, 
+  { id: 1, name: "Olympic Barbell", category: "Strength", price: "$299", rating: 4.9, image: "images/Olympic Barbell.jpg" },
+  { id: 2, name: "Power Rack", category: "Strength", price: "$699", rating: 4.8, image: "Power Rack.jpg" },
+  { id: 3, name: "Kettlebell Set", category: "Strength", price: "$150", rating: 4.8, image: "Kettlebell Set.jpg" },
+  { id: 4, name: "Adjustable Bench", category: "Strength", price: "$250", rating: 4.7, image: "Adjustable Bench.jpg" },
+  { id: 5, name: "Dumbbell Set (5-50lbs)", category: "Strength", price: "$599", rating: 4.9, image: "Dumbell Set.jpg" },
+  { id: 6, name: "Squat Stand", category: "Strength", price: "$350", rating: 4.6, image: "Squat Stand.jpg" },
+  { id: 7, name: "Hex Trap Bar", category: "Strength", price: "$180", rating: 4.7, image: "Hex Trap Bar.jpg" },
+  { id: 8, name: "Bumper Plates Set", category: "Strength", price: "$400", rating: 4.8, image: "Bumper Plates Set.jpg" },
+  { id: 9, name: "Dip Station", category: "Strength", price: "$120", rating: 4.5, image: "Dip Station.jpg" },
+  { id: 10, name: "Pull-Up Bar", category: "Strength", price: "$45", rating: 4.4, image: "Pull-Up Bar.jpg" },
+  { id: 11, name: "Smith Machine", category: "Strength", price: "$1200", rating: 4.6, image: "Smith Machine.jpg" },
+  { id: 12, name: "Leg Press Machine", category: "Strength", price: "$1500", rating: 4.9, image: "Leg Press Machine.jpg" },
+  { id: 13, name: "Cable Crossover", category: "Strength", price: "$1800", rating: 4.8, image: "Cable Crossover.jpg" },
+  { id: 14, name: "Preacher Curl Bench", category: "Strength", price: "$220", rating: 4.5, image: "Preacher Curl Bench.jpg" },
+  { id: 15, name: "Medicine Ball Set", category: "Strength", price: "$90", rating: 4.6, image: "Medicine Ball.jpg" },
+  { id: 16, name: "Battle Ropes", category: "Strength", price: "$80", rating: 4.7, image: "Battle Ropes.jpg" },
+  { id: 17, name: "Weight Vest 20lb", category: "Strength", price: "$65", rating: 4.5, image: "Weight Vest 20lb.jpg" },
+  { id: 18, name: "Landmine Attachment", category: "Strength", price: "$35", rating: 4.4, image: "Landmine Attachment.jpg" },
+  { id: 19, name: "EZ Curl Bar", category: "Strength", price: "$75", rating: 4.6, image: "EZ Curl Bar.jpg" },
+  { id: 20, name: "Plate Tree", category: "Strength", price: "$85", rating: 4.3, image: "Plate Tree.jpg" },
+  { id: 21, name: "Calf Raise Block", category: "Strength", price: "$40", rating: 4.2, image: "Calf Raise Block.jpg" },
+  { id: 22, name: "Power Tower", category: "Strength", price: "$180", rating: 4.5, image: "Power Tower.jpg" },
+  { id: 23, name: "Sled Push", category: "Strength", price: "$250", rating: 4.7, image: "Sled Push.jpg" },
+  { id: 24, name: "Sandbag Trainer", category: "Strength", price: "$55", rating: 4.4, image: "Sand Bag.jpg" },
+  { id: 25, name: "Grip Strengthener", category: "Strength", price: "$15", rating: 4.1, image: "Grip Strengthener.jpg " },
 
   // --- CARDIO (Ids 26-50) ---
-  { id: 26, name: "Elite Treadmill", category: "Cardio", price: "$1,499", rating: 4.7, image: "bg-gradient-to-br from-orange-500 to-red-600" },
-  { id: 27, name: "Rowing Machine", category: "Cardio", price: "$899", rating: 4.9, image: "bg-gradient-to-br from-blue-600 to-cyan-600" },
-  { id: 28, name: "Air Bike", category: "Cardio", price: "$799", rating: 4.8, image: "bg-gradient-to-br from-slate-600 to-black" },
-  { id: 29, name: "Spin Bike Pro", category: "Cardio", price: "$650", rating: 4.6, image: "bg-gradient-to-br from-red-500 to-pink-600" },
-  { id: 30, name: "Elliptical Trainer", category: "Cardio", price: "$950", rating: 4.5, image: "bg-gradient-to-br from-teal-500 to-teal-700" },
-  { id: 31, name: "Stair Climber", category: "Cardio", price: "$2200", rating: 4.8, image: "bg-gradient-to-br from-gray-500 to-gray-800" },
-  { id: 32, name: "Curved Treadmill", category: "Cardio", price: "$3000", rating: 4.9, image: "bg-gradient-to-br from-zinc-800 to-black" },
-  { id: 33, name: "Ski Ergometer", category: "Cardio", price: "$850", rating: 4.7, image: "bg-gradient-to-br from-cyan-600 to-blue-800" },
-  { id: 34, name: "Recumbent Bike", category: "Cardio", price: "$550", rating: 4.4, image: "bg-gradient-to-br from-purple-500 to-purple-700" },
-  { id: 35, name: "Vertical Climber", category: "Cardio", price: "$350", rating: 4.5, image: "bg-gradient-to-br from-stone-400 to-stone-600" },
-  { id: 36, name: "Jump Rope Speed", category: "Cardio", price: "$15", rating: 4.8, image: "bg-gradient-to-br from-yellow-400 to-orange-500" },
-  { 
-    id: 37, 
-    name: "Weighted Jump Rope", 
-    category: "Cardio", 
-    price: "$25 - $40", 
-    rating: 4.6, 
-    image: "bg-gradient-to-br from-red-400 to-red-600", 
-    variants: [
-      { name: "1/4 lb", price: 25 },
-      { name: "1/2 lb", price: 30 },
-      { name: "1 lb", price: 35 },
-      { name: "2 lb", price: 40 }
-    ]
-  },
-  { id: 38, name: "Agility Ladder", category: "Cardio", price: "$20", rating: 4.5, image: "bg-gradient-to-br from-green-400 to-green-600" },
-  { 
-    id: 39, 
-    name: "Plyo Box Set", 
-    category: "Cardio", 
-    price: "$50 - $180", 
-    rating: 4.7, 
-    image: "bg-gradient-to-br from-indigo-500 to-indigo-800",
-    variants: [
-      { name: "12 Inch", price: 50 },
-      { name: "18 Inch", price: 90 },
-      { name: "24 Inch", price: 130 },
-      { name: "30 Inch", price: 180 }
-    ]
-  },
-  { id: 40, name: "Slide Board", category: "Cardio", price: "$60", rating: 4.3, image: "bg-gradient-to-br from-sky-400 to-sky-600" },
-  { id: 41, name: "Mini Stepper", category: "Cardio", price: "$55", rating: 4.2, image: "bg-gradient-to-br from-gray-300 to-gray-500" },
-  { id: 42, name: "Under Desk Elliptical", category: "Cardio", price: "$120", rating: 4.4, image: "bg-gradient-to-br from-slate-300 to-slate-500" },
-  { id: 43, name: "Folding Treadmill", category: "Cardio", price: "$450", rating: 4.3, image: "bg-gradient-to-br from-zinc-400 to-zinc-600" },
-  { id: 44, name: "Water Rower", category: "Cardio", price: "$1100", rating: 4.8, image: "bg-gradient-to-br from-blue-300 to-blue-500" },
-  { id: 45, name: "Assault Bike", category: "Cardio", price: "$850", rating: 4.7, image: "bg-gradient-to-br from-neutral-600 to-black" },
-  { id: 46, name: "Cardio Trampoline", category: "Cardio", price: "$80", rating: 4.5, image: "bg-gradient-to-br from-pink-400 to-purple-500" },
-  { id: 47, name: "Running Parachute", category: "Cardio", price: "$20", rating: 4.1, image: "bg-gradient-to-br from-orange-400 to-orange-600" },
-  { id: 48, name: "Heart Rate Monitor", category: "Cardio", price: "$50", rating: 4.6, image: "bg-gradient-to-br from-rose-500 to-rose-700" },
-  { id: 49, name: "Stopwatch Pro", category: "Cardio", price: "$15", rating: 4.4, image: "bg-gradient-to-br from-yellow-300 to-yellow-500" },
-  { id: 50, name: "Step Platform", category: "Cardio", price: "$45", rating: 4.5, image: "bg-gradient-to-br from-emerald-400 to-emerald-600" },
+  { id: 26, name: "Elite Treadmill", category: "Cardio", price: "$1,499", rating: 4.7, image: "Elite Treadmill.jpg" },
+  { id: 27, name: "Rowing Machine", category: "Cardio", price: "$899", rating: 4.9, image: "Rowing Machine.jpg" },
+  { id: 28, name: "Air Bike", category: "Cardio", price: "$799", rating: 4.8, image: "Air Bike.jpg" },
+  { id: 29, name: "Spin Bike Pro", category: "Cardio", price: "$650", rating: 4.6, image: "Spin Bike Pro.jpg" },
+  { id: 30, name: "Elliptical Trainer", category: "Cardio", price: "$950", rating: 4.5, image: "Elliptical Trainer.jpg" },
+  { id: 31, name: "Stair Climber", category: "Cardio", price: "$2200", rating: 4.8, image: "Stair Climber.jpg" },
+  { id: 32, name: "Curved Treadmill", category: "Cardio", price: "$3000", rating: 4.9, image: "Curved Treadmill.jpg" },
+  { id: 33, name: "Ski Ergometer", category: "Cardio", price: "$850", rating: 4.7, image: "Ski Ergometer.jpg" },
+  { id: 34, name: "Recumbent Bike", category: "Cardio", price: "$550", rating: 4.4, image: "Recumbent Bike.jpg" },
+  { id: 35, name: "Vertical Climber", category: "Cardio", price: "$350", rating: 4.5, image: "Vertical Climber.jpg" },
+  { id: 36, name: "Jump Rope Speed", category: "Cardio", price: "$15", rating: 4.8, image: "Jump Rose Speed.jpg" },
+  { id: 37, name: "Weighted Jump Rope", category: "Cardio", price: "$25", rating: 4.6, image: "Weight Jump Rose.jpg" },
+  { id: 38, name: "Agility Ladder", category: "Cardio", price: "$20", rating: 4.5, image: "Agility Ladder.jpg" },
+  { id: 39, name: "Plyo Box Set", category: "Cardio", price: "$180", rating: 4.7, image: "Plyo Box.jpg" },
+  { id: 40, name: "Slide Board", category: "Cardio", price: "$60", rating: 4.3, image: "Slide Board Set.jpg" },
+  { id: 41, name: "Mini Stepper", category: "Cardio", price: "$55", rating: 4.2, image: "Mini Stepper.jpg" },
+  { id: 42, name: "Under Desk Elliptical", category: "Cardio", price: "$120", rating: 4.4, image: "Under Desk Elliptical.jpg" },
+  { id: 43, name: "Folding Treadmill", category: "Cardio", price: "$450", rating: 4.3, image: "Folding Treadmill.jpg" },
+  { id: 44, name: "Water Rower", category: "Cardio", price: "$1100", rating: 4.8, image: "Water Rower.jpg" },
+  { id: 45, name: "Assault Bike", category: "Cardio", price: "$850", rating: 4.7, image: "Assault Bike.jpg" },
+  { id: 46, name: "Cardio Trampoline", category: "Cardio", price: "$80", rating: 4.5, image: "Cardio Trampoline.jpg" },
+  { id: 47, name: "Running Parachute", category: "Cardio", price: "$20", rating: 4.1, image: "Running Parachute.jpg" },
+  { id: 48, name: "Heart Rate Monitor", category: "Cardio", price: "$50", rating: 4.6, image: "Heart Rate Monitor.jpg" },
+  { id: 49, name: "Stopwatch Pro", category: "Cardio", price: "$15", rating: 4.4, image: "Stop Watch Pro.jpg" },
+  { id: 50, name: "Step Platform", category: "Cardio", price: "$45", rating: 4.5, image: "Step Platform.jpg" },
 
   // --- ACCESSORIES (Ids 51-75) ---
   { 
