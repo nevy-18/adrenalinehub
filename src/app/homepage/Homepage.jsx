@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Topbar from '@/components/Topbar';
 import { Product } from '@/app/data/Product';
 import CartPage from '@/app/cart/page';
@@ -9,19 +9,28 @@ import { ArrowLeft, ShoppingCart, Star, X } from 'lucide-react';
 const QuickViewModal = ({ product, onClose, onAddToCart }) => {
   if (!product) return null;
 
-  // 1. DYNAMIC SIZES: Read from product data or default to empty
-  const sizes = product.sizes || [];
+ 
+  const variants = product.variants || [];
   
-  // 2. STATE: Default to the first available size option if it exists
-  const [selectedSize, setSelectedSize] = useState(sizes.length > 0 ? sizes[0] : null);
+
+  const [selectedVariant, setSelectedVariant] = useState(variants.length > 0 ? variants[0] : null);
   const [quantity, setQuantity] = useState(1);
+
+
+  const currentPrice = selectedVariant ? selectedVariant.price : parseInt(product.price.replace(/\D/g, '') || 0);
+  
+
+  const originalPrice = Math.floor(currentPrice * 1.2);
 
   const handleAddToCart = () => {
     onAddToCart({ 
       ...product, 
-      selectedSize,
+
+      price: currentPrice, 
+      selectedSize: selectedVariant ? selectedVariant.name : "One Size",
       quantity 
     });
+    onClose();
   };
 
   return (
@@ -33,11 +42,13 @@ const QuickViewModal = ({ product, onClose, onAddToCart }) => {
           <X className="w-6 h-6" />
         </button>
 
+        {/* Image Section */}
         <div className="w-full md:w-1/2 bg-gradient-to-br from-gray-900 to-black flex items-center justify-center p-8 relative">
            <span className="absolute text-white/5 text-6xl font-black uppercase -rotate-12 select-none">{product.category || "GYM"}</span>
            <div className={`w-full h-64 md:h-full ${product.image?.includes('http') ? '' : product.image} bg-contain bg-center bg-no-repeat relative z-10`} style={product.image?.includes('http') ? { backgroundImage: `url(${product.image})` } : {}}></div>
         </div>
 
+  
         <div className="w-full md:w-1/2 p-6 md:p-10 flex flex-col justify-center text-left">
           <span className="text-cyan-400 text-sm font-bold tracking-widest uppercase mb-2">{product.category || "Equipment"}</span>
           <h2 className="text-3xl md:text-4xl font-black text-white mb-2 leading-tight">{product.name}</h2>
@@ -49,38 +60,38 @@ const QuickViewModal = ({ product, onClose, onAddToCart }) => {
           
           <p className="text-gray-300 text-base leading-relaxed mb-8">{product.description || "Take your workout to the next level with this premium equipment."}</p>
           
+
           <div className="flex items-end gap-4 mb-8 border-b border-gray-700 pb-8">
-             <span className="text-4xl font-bold text-white">{product.price}</span>
-             <span className="text-gray-500 line-through mb-1 text-lg">${Math.floor(parseInt(product.price.replace(/\D/g,'') || 100) * 1.2)}</span>
+             <span className="text-4xl font-bold text-white">${currentPrice}</span>
+             <span className="text-gray-500 line-through mb-1 text-lg">${originalPrice}</span>
           </div>
 
           <div className="flex flex-col gap-6 mb-8">
-            
-            {/* 3. DYNAMIC OPTIONS RENDER: Only show if sizes exist */}
-            {sizes.length > 0 && (
+
+            {variants.length > 0 && (
               <div>
                 <span className="text-sm text-gray-400 uppercase font-bold tracking-wider mb-3 block">
                   Select Option
                 </span>
                 <div className="flex flex-wrap gap-3">
-                    {sizes.map((size) => (
+                    {variants.map((variant, index) => (
                         <button 
-                            key={size}
-                            onClick={() => setSelectedSize(size)}
+                            key={index}
+           
+                            onClick={() => setSelectedVariant(variant)}
                             className={`px-4 py-3 rounded-lg font-bold border transition-all text-sm ${
-                                selectedSize === size 
+                                selectedVariant && selectedVariant.name === variant.name
                                 ? "bg-cyan-500 text-black border-cyan-500 shadow-[0_0_10px_rgba(34,211,238,0.5)]" 
                                 : "bg-transparent text-gray-400 border-gray-600 hover:border-white hover:text-white"
                             }`}
                         >
-                            {size}
+                            {variant.name}
                         </button>
                     ))}
                 </div>
               </div>
             )}
 
-            {/* Quantity */}
             <div>
                 <span className="text-sm text-gray-400 uppercase font-bold tracking-wider mb-3 block">Quantity</span>
                 <div className="flex items-center bg-[#111827] rounded-lg w-fit border border-gray-700">
@@ -114,12 +125,47 @@ export default function Homepage() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentView, setCurrentView] = useState("home"); 
- 
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [cartItems, setCartItems] = useState([]);
-  
 
-  // dito yung Checking ng ID AND Sizes para ma check kung kg ba flavor or etc
+  // --- ads components ---
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const heroSlides = [
+    {
+        id: 1,
+        subtitle: "HEAVY DUTY GEAR",
+        title: "BUILD YOUR",
+        highlight: "DREAM GYM",
+        gradient: "from-gray-900 via-blue-900 to-cyan-900",
+        texture: "https://www.transparenttextures.com/patterns/diagmonds-light.png"
+    },
+    {
+        id: 2,
+        subtitle: "PERFORMANCE WEAR",
+        title: "UNLEASH YOUR",
+        highlight: "TRUE POWER",
+        gradient: "from-gray-900 via-purple-900 to-pink-900",
+        texture: "https://www.transparenttextures.com/patterns/carbon-fibre.png"
+    },
+    {
+        id: 3,
+        subtitle: "HOME ESSENTIALS",
+        title: "TRAIN HARD",
+        highlight: "STAY STRONG",
+        gradient: "from-black via-gray-800 to-gray-600",
+        texture: "https://www.transparenttextures.com/patterns/cubes.png"
+    }
+  ];
+
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+        setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [heroSlides.length]);
+
   const addToCart = (productToAdd) => {
     setCartItems((prevItems) => {
 
@@ -137,14 +183,13 @@ export default function Homepage() {
       } else {
         return [...prevItems, { 
           ...productToAdd, 
-          // Default quantity to 1 if coming from the card "Quick Add" button
+  
           quantity: productToAdd.quantity || 1,
-          // Default size to first option if coming from card "Quick Add" button
-          selectedSize: productToAdd.selectedSize || (productToAdd.sizes ? productToAdd.sizes[0] : null) 
+          selectedSize: productToAdd.selectedSize || "One Size"
         }];
       }
     });
-    setSelectedProduct(null);
+
   };
 
   const removeFromCart = (indexToRemove) => {
@@ -167,7 +212,10 @@ export default function Homepage() {
         <QuickViewModal 
           product={selectedProduct} 
           onClose={() => setSelectedProduct(null)}
-          onAddToCart={addToCart} 
+          onAddToCart={(item) => {
+             addToCart(item);
+             setSelectedProduct(null);
+          }} 
         />
       )}
 
@@ -196,19 +244,56 @@ export default function Homepage() {
           </div>
         ) : (
           <div className="animate-in fade-in slide-in-from-left-4 duration-300">
-            {/* HERO SECTION */}
+            {/* ads section */}
             <div className="relative w-full h-[200px] md:h-[400px] 2xl:h-[600px] rounded-3xl overflow-hidden shadow-2xl group transition-all duration-500 hover:shadow-cyan-500/20">
-              <div className="absolute inset-0 bg-gradient-to-r from-gray-900 via-blue-900 to-cyan-900 animate-gradient-x"></div>
-              <div className="absolute top-0 right-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/diagmonds-light.png')] opacity-20"></div>
-              <div className="relative z-10 h-full flex flex-col justify-center px-6 md:px-12 2xl:px-24">
-                <span className="text-cyan-400 font-bold tracking-widest text-sm md:text-lg 2xl:text-2xl mb-2">HEAVY DUTY GEAR</span>
-                <h1 className="text-4xl md:text-6xl 2xl:text-8xl font-black italic mb-4 2xl:mb-8 drop-shadow-lg leading-tight py-4 pr-8">
-                  BUILD YOUR <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-white pb-4 pr-4">DREAM GYM</span>
-                </h1>
-                <button className="w-fit bg-cyan-500 hover:bg-cyan-400 text-[#1a1a40] font-bold py-2 px-6 md:py-3 md:px-8 2xl:py-5 2xl:px-12 2xl:text-2xl rounded-full transition-transform active:scale-95 shadow-[0_0_20px_rgba(34,211,238,0.6)] hover:shadow-[0_0_40px_rgba(34,211,238,0.8)]">
-                  Shop Equipment
-                </button>
+              
+              {heroSlides.map((slide, index) => (
+                <div 
+                    key={slide.id}
+                    className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                        index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
+                    }`}
+                >
+
+                    <div className={`absolute inset-0 bg-gradient-to-r ${slide.gradient} animate-gradient-x`}></div>
+                    
+                    {/* Texture Overlay */}
+                    <div 
+                        className="absolute top-0 right-0 w-full h-full opacity-20"
+                        style={{ backgroundImage: `url('${slide.texture}')` }}
+                    ></div>
+
+                    {/* Content */}
+                    <div className="relative z-10 h-full flex flex-col justify-center px-6 md:px-12 2xl:px-24">
+                        <span className="text-cyan-400 font-bold tracking-widest text-sm md:text-lg 2xl:text-2xl mb-2">
+                            {slide.subtitle}
+                        </span>
+                        <h1 className="text-4xl md:text-6xl 2xl:text-8xl font-black italic mb-4 2xl:mb-8 drop-shadow-lg leading-tight py-4 pr-8">
+                            {slide.title} <br/> 
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-white pb-4 pr-4">
+                                {slide.highlight}
+                            </span>
+                        </h1>
+                    </div>
+                </div>
+              ))}
+
+              {/* PAGINATION CIRCLES */}
+              <div className="absolute bottom-6 left-6 md:left-12 2xl:left-24 z-20 flex gap-3">
+                 {heroSlides.map((_, index) => (
+                    <button
+                        key={index}
+                        onClick={() => setCurrentSlide(index)}
+                        className={`transition-all duration-300 rounded-full shadow-lg ${
+                            currentSlide === index 
+                            ? "w-8 h-3 bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.8)]" 
+                            : "w-3 h-3 bg-white/30 hover:bg-white"
+                        }`}
+                        aria-label={`Go to slide ${index + 1}`}
+                    />
+                 ))}
               </div>
+
             </div>
 
             {/* CATEGORIES */}
@@ -272,12 +357,24 @@ export default function Homepage() {
                         </div>
                         <p className="text-gray-400 text-xs 2xl:text-sm">Pro Equipment</p>
                         <div className="flex justify-between items-center mt-2 2xl:mt-4">
+                          {/* Display the price range string (e.g., $30 - $90) on the card */}
                           <span className="text-cyan-400 font-bold text-lg 2xl:text-2xl">{item.price}</span>
                           
+                          {/* Button on the card */}
                           <button 
                             onClick={(e) => {
                                 e.stopPropagation(); 
-                                addToCart(item);
+
+                                if (item.variants && item.variants.length > 0) {
+
+                                    setSelectedProduct(item);
+                                } else {
+
+                                    addToCart({
+                                        ...item,
+                                        price: parseInt(item.price.replace(/\D/g, '') || 0), 
+                                    });
+                                }
                             }}
                             className="bg-white/10 hover:bg-cyan-500 hover:text-[#1a1a40] p-2 2xl:p-3 rounded-lg transition-colors"
                           >
