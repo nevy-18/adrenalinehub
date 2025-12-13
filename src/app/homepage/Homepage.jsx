@@ -334,18 +334,36 @@ export default function Homepage() {
                 {filteredProducts && filteredProducts.length > 0 ? (
                   filteredProducts.map((item) => (
                     <div key={item.id} className="bg-[#1f2937]/60 backdrop-blur-sm rounded-2xl p-3 md:p-4 2xl:p-6 border border-white/10 hover:border-cyan-400/50 hover:-translate-y-2 transition-all duration-300 group shadow-lg flex flex-col justify-between">
-                      <div className={`w-full aspect-square ${item.image} rounded-xl mb-3 2xl:mb-5 relative overflow-hidden flex items-center justify-center`}>
-                        <span className="text-white/20 font-black italic text-xl 2xl:text-3xl uppercase -rotate-12 select-none">{item.name.split(" ")[0]}</span>
-                        
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4">
-                          <button 
-                             onClick={() => setSelectedProduct(item)} 
-                             className="bg-white text-black text-xs 2xl:text-base font-bold px-3 py-1 2xl:px-5 2xl:py-2 rounded-full cursor-pointer hover:bg-cyan-400 hover:text-black transition-colors"
-                          >
-                            Quick View
-                          </button>
-                        </div>
-                      </div>
+                      <div className={`w-full aspect-square rounded-xl mb-3 2xl:mb-5 relative overflow-hidden flex items-center justify-center bg-gray-800`}>
+  
+  {/* LOGIC CHECK: Is it an image file OR a CSS gradient? */}
+  {item.image.startsWith('/') || item.image.includes('.') ? (
+      /* If it is a file path, render an actual IMG tag */
+      <img 
+        src={item.image} 
+        alt={item.name} 
+        className="w-full h-full object-cover absolute inset-0"
+      />
+  ) : (
+      /* If it is a CSS gradient (like your accessories), render it as a background DIV */
+      <div className={`w-full h-full absolute inset-0 ${item.image}`}></div>
+  )}
+
+  {/* Keep your text overlay (optional, maybe hide it if there is a real image) */}
+  <span className="text-white/20 font-black italic text-xl 2xl:text-3xl uppercase -rotate-12 select-none z-0 relative">
+     {item.name.split(" ")[0]}
+  </span>
+
+  {/* Keep your hover overlay buttons exactly as they were */}
+  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4 z-10">
+    <button 
+       onClick={() => setSelectedProduct(item)} 
+       className="bg-white text-black text-xs 2xl:text-base font-bold px-3 py-1 2xl:px-5 2xl:py-2 rounded-full cursor-pointer hover:bg-cyan-400 hover:text-black transition-colors"
+    >
+       Quick View
+    </button>
+  </div>
+</div>
 
                       <div className="space-y-1 2xl:space-y-2">
                         <div className="flex justify-between items-start">
