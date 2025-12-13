@@ -46,10 +46,39 @@ export default function SignUp() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+ const handleSubmit = async (e) => { // Note the 'async' here
     e.preventDefault();
-    console.log('Form Submitted:', formData);
-    // Add your registration logic here
+
+    // 1. Basic password check
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:3001/register', {
+        method: 'POST', // We are sending data, so we use POST
+        headers: {
+          'Content-Type': 'application/json', // We are sending JSON data
+        },
+        body: JSON.stringify({
+          username: formData.username,
+          email: formData.email,
+          password: formData.password 
+        }),
+      });
+
+      // 3. Check if the server said "OK"
+      if (response.ok) {
+        alert("Account created successfully!");
+        setLoginForm(true); // Switch to login screen
+      } else {
+        alert("Failed to register. Username or Email might be taken.");
+      }
+    } catch (error) {
+      console.error('Connection Error:', error);
+      alert("Cannot connect to server. Is server.js running?");
+    }
   };
 
   return (
@@ -109,6 +138,22 @@ export default function SignUp() {
               className="bg-transparent border border-white/30 rounded-full px-6 py-3 
                          text-white placeholder-[#A9A9A9] outline-none focus:border-white 
                          focus:bg-white/10 transition-all duration-300"
+              required
+              
+            />
+          </div>
+          {/* Confirm Password Input */}
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium ml-4">Confirm Password</label>
+            <input
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              placeholder="Confirm password"
+              className="bg-transparent border border-white/30 rounded-full px-6 py-3 
+                           text-white placeholder-[#A9A9A9] outline-none focus:border-white 
+                           focus:bg-white/10 transition-all duration-300"
               required
             />
           </div>

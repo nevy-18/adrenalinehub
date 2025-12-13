@@ -1,9 +1,9 @@
 
 export const Product = [
-  { id: 1, name: "Olympic Barbell", category: "Strength", price: "$299", rating: 4.9, image: "images/Olympic Barbell.jpg" },
-  { id: 2, name: "Power Rack", category: "Strength", price: "$699", rating: 4.8, image: "Power Rack.jpg" },
-  { id: 3, name: "Kettlebell Set", category: "Strength", price: "$150", rating: 4.8, image: "Kettlebell Set.jpg" },
-  { id: 4, name: "Adjustable Bench", category: "Strength", price: "$250", rating: 4.7, image: "Adjustable Bench.jpg" },
+ { id: 1, name: "Olympic Barbell", category: "Strength", price: "$299", rating: 4.9, image:  "/images/Olympic_Barbell.jpg" },
+  { id: 2, name: "Power Rack", category: "Strength", price: "$699", rating: 4.8, Image: "/images/Power_Rack.jpg" },
+  { id: 3, name: "Kettlebell Set", category: "Strength", price: "$150", rating: 4.8, image: "/images/Kettlebell_Set.jpg" },
+  { id: 4, name: "Adjustable Bench", category: "Strength", price: "$250", rating: 4.7, image: "/images/Adjustable Bench.jpg" },
   { id: 5, name: "Dumbbell Set (5-50lbs)", category: "Strength", price: "$599", rating: 4.9, image: "Dumbell Set.jpg" },
   { id: 6, name: "Squat Stand", category: "Strength", price: "$350", rating: 4.6, image: "Squat Stand.jpg" },
   { id: 7, name: "Hex Trap Bar", category: "Strength", price: "$180", rating: 4.7, image: "Hex Trap Bar.jpg" },
@@ -28,7 +28,7 @@ export const Product = [
 
   // --- CARDIO (Ids 26-50) ---
   { id: 26, name: "Elite Treadmill", category: "Cardio", price: "$1,499", rating: 4.7, image: "Elite Treadmill.jpg" },
-  { id: 27, name: "Rowing Machine", category: "Cardio", price: "$899", rating: 4.9, image: "Rowing Machine.jpg" },
+  { id: 27, name: "Rowing Machine", category: "Cardio", price: "$899", rating: 4.9, image: "/images/Rowing_Machine.jpg" },
   { id: 28, name: "Air Bike", category: "Cardio", price: "$799", rating: 4.8, image: "Air Bike.jpg" },
   { id: 29, name: "Spin Bike Pro", category: "Cardio", price: "$650", rating: 4.6, image: "Spin Bike Pro.jpg" },
   { id: 30, name: "Elliptical Trainer", category: "Cardio", price: "$950", rating: 4.5, image: "Elliptical Trainer.jpg" },
