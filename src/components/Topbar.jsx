@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Product } from '@/app/data/Product';
 import { XIcon,ShoppingCart, Search, Menu , User, TrendingUp, AlertCircle, Trash2, ArrowLeft} from 'lucide-react';
 
-const Topbar = ({onCartClick, searchValue, onSearchChange}) => {
+const Topbar = ({onUserClick , onCartClick, searchValue, onSearchChange}) => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   // Fallback "Suggested" products - displayed when search is empty
@@ -111,14 +111,17 @@ const Topbar = ({onCartClick, searchValue, onSearchChange}) => {
         )}
       </div>
 
-      {/* User Icons Section */}
+    
       <div className="flex items-center gap-4 md:gap-6 2xl:gap-12">
         <button className="p-3 2xl:p-5 hover:bg-white/10 rounded-full relative group transition-all"
         onClick={onCartClick}>
           <ShoppingCart className="w-7 h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 2xl:w-12 2xl:h-12 text-white transition-transform group-hover:scale-110" />
           <span className="absolute top-1 right-0 bg-red-500 text-[10px] 2xl:text-sm font-bold px-1.5 2xl:px-2 py-0.5 2xl:py-1 rounded-full border border-[#1a1a40]">2</span>
         </button>
-        <button className="p-3 2xl:p-5 hover:bg-white/10 rounded-full group transition-all"
+        {/* User Icons Section */}
+        <button 
+          className="p-3 2xl:p-5 hover:bg-white/10 rounded-full group transition-all"
+          onClick={onUserClick}  // 2. Add the click handler here 👇
         >
           <User className="w-7 h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 2xl:w-12 2xl:h-12 text-white transition-transform group-hover:scale-110" />
         </button>
