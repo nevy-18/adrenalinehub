@@ -149,7 +149,7 @@ const UserProfile = ({ onBack, username, onLogout }) => {
             key={idx} 
             onClick={() => {
                 if (item.label === "Log Out") {
-                    onLogout(); 
+                    onLogout();
                 } else {
                     console.log(`Clicked ${item.label}`);
                 }
@@ -179,32 +179,42 @@ export default function Homepage({ onLogout, username }) {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [cartItems, setCartItems] = useState([]);
 
-  // Data for the expanding cards (Popular Items)
-  const popularItemsSlides = [
+  // State for Expanding Cards
+  const [activeSlide, setActiveSlide] = useState(0);
+
+  // Selected 5 items from your provided Product list for the expanding animation
+  // I added real image URLs for the cards to make the animation look good, 
+  // as gradients don't work well for "expanding photo" effects.
+  const popularItems = [
     {
-        id: 1,
-        title: "HEAVY DUTY",
-        image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1470&auto=format&fit=crop" 
+      id: 1,
+      name: "Olympic Barbell",
+      category: "Strength",
+      image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1470&auto=format&fit=crop"
     },
     {
-        id: 2,
-        title: "PERFORMANCE",
-        image: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1470&auto=format&fit=crop"
+      id: 26,
+      name: "Elite Treadmill",
+      category: "Cardio",
+      image: "https://images.unsplash.com/photo-1576678927484-cc907957088c?q=80&w=1470&auto=format&fit=crop"
     },
     {
-        id: 3,
-        title: "ESSENTIALS",
-        image: "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?q=80&w=1471&auto=format&fit=crop"
+      id: 5,
+      name: "Dumbbell Set",
+      category: "Strength",
+      image: "https://images.unsplash.com/photo-1637666062717-1c6bcfa4a4df?q=80&w=1470&auto=format&fit=crop"
     },
     {
-        id: 4,
-        title: "CARDIO",
-        image: "https://images.unsplash.com/photo-1599058945522-28d584b6f0ff?q=80&w=1469&auto=format&fit=crop"
+      id: 51,
+      name: "Yoga Mat Pro",
+      category: "Accessories",
+      image: "https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?q=80&w=1469&auto=format&fit=crop"
     },
     {
-        id: 5,
-        title: "RECOVERY",
-        image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?q=80&w=1470&auto=format&fit=crop"
+      id: 76,
+      name: "Massage Gun",
+      category: "Recovery",
+      image: "https://images.unsplash.com/photo-1598289431512-b97b0917affc?q=80&w=1474&auto=format&fit=crop"
     }
   ];
 
@@ -298,8 +308,9 @@ export default function Homepage({ onLogout, username }) {
         {currentView === 'home' && (
           <div className="animate-in fade-in slide-in-from-left-4 duration-300">
             
-            {/* 1. STATIC HERO BANNER (TOP) */}
-            <div className="relative w-full h-[250px] md:h-[400px] 2xl:h-[500px] rounded-3xl overflow-hidden shadow-2xl group transition-all duration-500 hover:shadow-cyan-500/20 bg-gradient-to-r from-blue-900 to-cyan-900 flex items-center">
+            {/* 1. STATIC HERO BANNER (Top) */}
+            {/* Replacing the slider with the static banner you requested */}
+            <div className="relative w-full h-[250px] md:h-[400px] 2xl:h-[500px] rounded-3xl overflow-hidden shadow-2xl group transition-all duration-500 hover:shadow-cyan-500/20 bg-gradient-to-r from-blue-900 to-cyan-900 flex items-center mb-16">
                 {/* Background Pattern */}
                 <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/diagmonds-light.png')]"></div>
                 
@@ -320,33 +331,50 @@ export default function Homepage({ onLogout, username }) {
                 </div>
             </div>
 
-            {/* 2. EXPANDING CARDS (MIDDLE - Labeled Popular Items) */}
-            <div className="mt-16">
-               <h2 className="text-xl md:text-2xl 2xl:text-4xl font-bold italic tracking-wide mb-6">Popular Items</h2>
+            {/* 2. EXPANDING FLEX CARDS (Middle) - Labeled "Popular Items" */}
+            <div className="space-y-6">
+               <h2 className="text-xl md:text-2xl 2xl:text-4xl font-bold italic tracking-wide">Popular Items</h2>
                
-               {/* Flex Container for Animation */}
-               <div className="flex w-full h-[400px] gap-2 md:gap-4">
-                  {popularItemsSlides.map((slide) => (
+               <div className="flex w-full h-[300px] md:h-[400px] 2xl:h-[500px] gap-2 md:gap-4">
+                  {popularItems.map((item, index) => (
                     <div
-                      key={slide.id}
-                      // flex-1 is default (collapsed). hover:flex-[5] expands it.
-                      className="relative flex-1 rounded-[20px] bg-cover bg-center cursor-pointer transition-[flex] duration-500 ease-in-out hover:flex-[5] group overflow-hidden" 
-                      style={{ backgroundImage: `url('${slide.image}')` }}
+                      key={item.id}
+                      onClick={() => setActiveSlide(index)}
+                      // The flex expansion logic: flex-[5] when active, flex-[1] when inactive
+                      className={`
+                        relative rounded-[20px] bg-cover bg-center cursor-pointer transition-[flex] duration-700 ease-in-out group overflow-hidden border border-white/10
+                        ${activeSlide === index ? 'flex-[5] shadow-[0_0_20px_rgba(34,211,238,0.3)]' : 'flex-[1] opacity-60 hover:opacity-100 hover:flex-[1.5]'}
+                      `}
+                      style={{ backgroundImage: `url('${item.image}')` }}
                     >
-                        {/* Overlay to darken background for text readability */}
-                        <div className="absolute inset-0 bg-black/30 group-hover:bg-transparent transition-colors duration-500" />
+                        {/* Overlay */}
+                        <div className={`absolute inset-0 bg-black/40 transition-colors duration-500 ${activeSlide === index ? 'bg-black/10' : 'group-hover:bg-black/20'}`}></div>
                         
-                        {/* Text that appears on hover/always visible but styled */}
-                        <div className="absolute bottom-6 left-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100 whitespace-nowrap">
-                            <h3 className="text-white text-3xl font-black italic uppercase shadow-black drop-shadow-lg">{slide.title}</h3>
-                            <div className="w-12 h-1 bg-cyan-400 mt-2"></div>
+                        {/* Content */}
+                        <div className={`absolute bottom-0 left-0 p-4 md:p-8 transition-all duration-500 ${activeSlide === index ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+                           {activeSlide === index && (
+                              <>
+                                <span className="text-cyan-400 font-bold text-sm tracking-widest uppercase">{item.category}</span>
+                                <h3 className="text-white text-2xl md:text-4xl font-black italic uppercase shadow-black drop-shadow-lg mb-2">{item.name}</h3>
+                                <button className="bg-white/20 hover:bg-cyan-400 hover:text-black backdrop-blur-md px-4 py-2 rounded-full text-xs font-bold transition-all">
+                                  View Details
+                                </button>
+                              </>
+                           )}
                         </div>
+
+                        {/* Vertical Text when inactive (Desktop only) */}
+                        {activeSlide !== index && (
+                           <div className="absolute inset-0 flex items-center justify-center hidden md:flex">
+                              <span className="text-white/80 font-bold text-xl uppercase -rotate-90 tracking-widest whitespace-nowrap">{item.name}</span>
+                           </div>
+                        )}
                     </div>
                   ))}
                </div>
             </div>
 
-            {/* 3. CATEGORY FILTERS & PRODUCT GRID (BOTTOM) */}
+            {/* 3. CATEGORIES & PRODUCT GRID (Bottom) */}
             <div className="space-y-4 2xl:space-y-8 mt-16">
               <h2 className="text-xl md:text-2xl 2xl:text-4xl font-bold italic tracking-wide">Browse by Category</h2>
               <div className="flex gap-4 2xl:gap-8 overflow-x-auto pb-4 scrollbar-hide">
