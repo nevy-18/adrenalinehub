@@ -3,6 +3,7 @@ import { useState } from "react";
 import Homepage from "../homepage/Homepage";
 import SignUp from "../signup/SignUp";
 
+// --- VISUAL COMPONENT ---
 const BackgroundLines = () => (
   <>
     <div className="absolute top-[9%] right-[0%] w-[300px] md:w-[500px] 2xl:w-[800px] h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent rotate-[134deg] opacity-60" />
@@ -18,17 +19,19 @@ const BackgroundLines = () => (
   </>
 );
 
+// --- MAIN COMPONENT ---
 export default function LoginForm() {
   const [showHomePage, setHomePage] = useState(false);
   const [showsignup, setSignup] = useState(false);
   const [error, setError] = useState("");
   
-  // --- FIXED SECTION: Must be 'identifier', not 'email' ---
+  // 1. State to hold the username from the backend
+  const [currentUser, setCurrentUser] = useState(""); 
+
   const [loginData, setLoginData] = useState({
     identifier: '', 
     password: ''
   });
-  // --------------------------------------------------------
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -42,7 +45,6 @@ export default function LoginForm() {
     e.preventDefault(); 
     console.log("1. Button Clicked!"); 
 
-    // Logic to decide if it's an Email or Username
     const isEmail = loginData.identifier.includes('@');
     
     // Create the payload for the backend
@@ -68,6 +70,9 @@ export default function LoginForm() {
         console.log("5. Data parsed:", data);
 
         if (response.ok) {
+            // 2. SAVE USERNAME TO STATE
+            setCurrentUser(data.username);
+
             alert("SUCCESS: " + data.message);
             setHomePage(true);
         } else {
@@ -75,6 +80,7 @@ export default function LoginForm() {
             setError(data.message);
         }
     } catch (error) {
+        // NOTE: You cannot access 'response' here because the fetch might have failed completely
         console.error('CRITICAL ERROR:', error);
         alert("SYSTEM ERROR: " + error.message);
     }
@@ -89,7 +95,13 @@ export default function LoginForm() {
   };
 
   if (showHomePage) {
-    return <Homepage />;
+    // 3. PASS USERNAME TO HOMEPAGE
+    return (
+        <Homepage 
+            onLogout={() => setHomePage(false)} 
+            username={currentUser} 
+        />
+    );
   }
   
   if (showsignup){

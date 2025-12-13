@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import Topbar from '@/components/Topbar';
 import { Product } from '@/app/data/Product';
 import CartPage from '@/app/cart/page';
-import { ArrowLeft, ShoppingCart, Star, X } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Star, X, Package, Heart, Settings, LogOut, User, ChevronRight } from 'lucide-react';
 
 // --- QUICK VIEW MODAL COMPONENT ---
 const QuickViewModal = ({ product, onClose, onAddToCart }) => {
@@ -15,7 +15,6 @@ const QuickViewModal = ({ product, onClose, onAddToCart }) => {
   const variants = product.variants || [];
   const [selectedVariant, setSelectedVariant] = useState(variants.length > 0 ? variants[0] : null);
   const [quantity, setQuantity] = useState(1);
-
 
   const parsePrice = (priceStr) => {
     if (typeof priceStr === 'number') return priceStr;
@@ -36,55 +35,47 @@ const QuickViewModal = ({ product, onClose, onAddToCart }) => {
     onClose();
   };
 
-  // Handler for Buy Now - 
   const handleBuyNow = () => {
-  
-    onAddToCart({ 
-        ...product, 
-        price: currentPrice, 
+   const buyData = {
+        id: product.id,
+        name: product.name,
+        price: currentPrice,
+        image: product.image,
         selectedSize: selectedVariant ? selectedVariant.name : "One Size",
-        quantity 
-      });
-    router.push('/buy');
+        quantity: quantity
+      };
+    const queryString = new URLSearchParams(buyData).toString();
+    router.push(`/buy?${queryString}`);
   };
 
   return (
     <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity" onClick={onClose}></div>
       <div className="relative bg-[#1e293b] w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row border border-cyan-500/30 animate-in fade-in zoom-in-95 duration-200">
-        
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-white z-10 hover:bg-white/10 p-1 rounded-full transition-colors">
           <X className="w-6 h-6" />
         </button>
-
         {/* Image Section */}
         <div className="w-full md:w-1/2 bg-gradient-to-br from-gray-900 to-black flex items-center justify-center p-8 relative">
            <span className="absolute text-white/5 text-6xl font-black uppercase -rotate-12 select-none">{product.category || "GYM"}</span>
            <div className={`w-full h-64 md:h-full ${product.image?.includes('http') ? '' : product.image} bg-contain bg-center bg-no-repeat relative z-10`} style={product.image?.includes('http') ? { backgroundImage: `url(${product.image})` } : {}}></div>
         </div>
-
         <div className="w-full md:w-1/2 p-6 md:p-10 flex flex-col justify-center text-left">
           <span className="text-cyan-400 text-sm font-bold tracking-widest uppercase mb-2">{product.category || "Equipment"}</span>
           <h2 className="text-3xl md:text-4xl font-black text-white mb-2 leading-tight">{product.name}</h2>
-          
           <div className="flex items-center gap-2 mb-6 text-yellow-400">
              <div className="flex">{[...Array(5)].map((_, i) => (<Star key={i} className={`w-4 h-4 ${i < Math.floor(product.rating) ? "fill-current" : "text-gray-600"}`} />))}</div>
              <span className="text-gray-300 text-sm ml-2">({product.rating} Reviews)</span>
           </div>
-          
           <p className="text-gray-300 text-base leading-relaxed mb-8">{product.description || "Take your workout to the next level with this premium equipment."}</p>
-          
           <div className="flex items-end gap-4 mb-8 border-b border-gray-700 pb-8">
              <span className="text-4xl font-bold text-white">${currentPrice}</span>
              <span className="text-gray-500 line-through mb-1 text-lg">${originalPrice}</span>
           </div>
-
           <div className="flex flex-col gap-6 mb-8">
             {variants.length > 0 && (
               <div>
-                <span className="text-sm text-gray-400 uppercase font-bold tracking-wider mb-3 block">
-                  Select Option
-                </span>
+                <span className="text-sm text-gray-400 uppercase font-bold tracking-wider mb-3 block">Select Option</span>
                 <div className="flex flex-wrap gap-3">
                     {variants.map((variant, index) => (
                         <button 
@@ -102,25 +93,16 @@ const QuickViewModal = ({ product, onClose, onAddToCart }) => {
                 </div>
               </div>
             )}
-
             <div>
                 <span className="text-sm text-gray-400 uppercase font-bold tracking-wider mb-3 block">Quantity</span>
                 <div className="flex items-center bg-[#111827] rounded-lg w-fit border border-gray-700">
-                    <button 
-                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                        className="px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 transition-colors text-xl font-bold"
-                    >-</button>
+                    <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 transition-colors text-xl font-bold">-</button>
                     <span className="px-4 text-white font-mono text-lg w-12 text-center">{quantity}</span>
-                    <button 
-                        onClick={() => setQuantity(quantity + 1)}
-                        className="px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 transition-colors text-xl font-bold"
-                    >+</button>
+                    <button onClick={() => setQuantity(quantity + 1)} className="px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 transition-colors text-xl font-bold">+</button>
                 </div>
             </div>
           </div>
-
           <div className="flex flex-col gap-3">
-            {/* FIXED: Replaced invalid component call with handleBuyNow */}
             <button onClick={handleBuyNow} className="w-full bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-lg py-4 rounded-xl shadow-[0_0_20px_rgba(34,211,238,0.4)] hover:shadow-[0_0_30px_rgba(34,211,238,0.6)] transition-all active:scale-95">BUY NOW</button>
             <button onClick={handleAddToCart} className="w-full bg-transparent border border-gray-600 hover:border-white text-white font-semibold py-4 rounded-xl flex items-center justify-center gap-2 transition-all hover:bg-white/5">
                <ShoppingCart className="w-5 h-5" /> Add to Cart
@@ -132,51 +114,99 @@ const QuickViewModal = ({ product, onClose, onAddToCart }) => {
   );
 };
 
+// --- USER PROFILE COMPONENT ---
+const UserProfile = ({ onBack, username, onLogout }) => {
+  return (
+    <div className="animate-in fade-in slide-in-from-right-4 duration-300 w-full max-w-4xl mx-auto">
+      <button 
+        onClick={onBack}
+        className="text-xl md:text-2xl flex items-center gap-2 text-cyan-400 hover:text-white mb-8 transition-colors"
+      >
+        <ArrowLeft className="w-6 h-6" />
+        Back to Shop
+      </button>
+
+      <div className="bg-[#1f2937]/80 backdrop-blur-sm rounded-3xl p-8 border border-white/10 flex flex-col md:flex-row items-center gap-8 shadow-2xl">
+        <div className="w-32 h-32 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center shadow-[0_0_30px_rgba(34,211,238,0.3)]">
+           <span className="text-4xl font-black text-[#1a1a40]">{username ? username.charAt(0).toUpperCase() : "U"}</span>
+        </div>
+        <div className="text-center md:text-left space-y-2">
+           <h1 className="text-4xl font-bold text-white">{username || "Guest User"}</h1>
+           <p className="text-gray-400">Member since 2024 • Pro Athlete</p>
+           <button className="bg-white/10 hover:bg-white/20 px-6 py-2 rounded-full text-sm font-bold transition-all mt-2">
+             Edit Profile
+           </button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+        {[
+          { icon: Package, label: "My Orders", desc: "Track active shipments" },
+          { icon: Settings, label: "Settings", desc: "Account preferences" },
+          { icon: LogOut, label: "Log Out", desc: "Sign out of account", color: "text-red-400" },
+        ].map((item, idx) => (
+          <button 
+            key={idx} 
+            onClick={() => {
+                if (item.label === "Log Out") {
+                    onLogout(); 
+                } else {
+                    console.log(`Clicked ${item.label}`);
+                }
+            }} 
+            className="bg-[#1f2937]/60 p-6 rounded-2xl border border-white/5 hover:border-cyan-400/50 hover:bg-[#1f2937] transition-all group text-left flex items-center gap-6"
+          >
+             <div className={`p-4 rounded-xl bg-white/5 group-hover:bg-cyan-400/20 ${item.color || "text-cyan-400"}`}>
+               <item.icon className="w-8 h-8" />
+             </div>
+             <div>
+               <h3 className={`text-xl font-bold ${item.color || "text-white"}`}>{item.label}</h3>
+               <p className="text-gray-400 text-sm">{item.desc}</p>
+             </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 // --- MAIN HOMEPAGE ---
-export default function Homepage() {
-  const router = useRouter(); // Initialize router here as well if needed
+export default function Homepage({ onLogout, username }) {
+  const router = useRouter(); 
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentView, setCurrentView] = useState("home"); 
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [cartItems, setCartItems] = useState([]);
 
-  // --- ads components ---
-  const [currentSlide, setCurrentSlide] = useState(0);
-
-  const heroSlides = [
+  // Data for the expanding cards (Popular Items)
+  const popularItemsSlides = [
     {
         id: 1,
-        subtitle: "HEAVY DUTY GEAR",
-        title: "BUILD YOUR",
-        highlight: "DREAM GYM",
-        gradient: "from-gray-900 via-blue-900 to-cyan-900",
-        texture: "https://www.transparenttextures.com/patterns/diagmonds-light.png"
+        title: "HEAVY DUTY",
+        image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1470&auto=format&fit=crop" 
     },
     {
         id: 2,
-        subtitle: "PERFORMANCE WEAR",
-        title: "UNLEASH YOUR",
-        highlight: "TRUE POWER",
-        gradient: "from-gray-900 via-purple-900 to-pink-900",
-        texture: "https://www.transparenttextures.com/patterns/carbon-fibre.png"
+        title: "PERFORMANCE",
+        image: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1470&auto=format&fit=crop"
     },
     {
         id: 3,
-        subtitle: "HOME ESSENTIALS",
-        title: "TRAIN HARD",
-        highlight: "STAY STRONG",
-        gradient: "from-black via-gray-800 to-gray-600",
-        texture: "https://www.transparenttextures.com/patterns/cubes.png"
+        title: "ESSENTIALS",
+        image: "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?q=80&w=1471&auto=format&fit=crop"
+    },
+    {
+        id: 4,
+        title: "CARDIO",
+        image: "https://images.unsplash.com/photo-1599058945522-28d584b6f0ff?q=80&w=1469&auto=format&fit=crop"
+    },
+    {
+        id: 5,
+        title: "RECOVERY",
+        image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?q=80&w=1470&auto=format&fit=crop"
     }
   ];
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-        setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, [heroSlides.length]);
 
   const addToCart = (productToAdd) => {
     setCartItems((prevItems) => {
@@ -232,6 +262,7 @@ export default function Homepage() {
         <Topbar 
           onCartClick={() => setCurrentView("cart")}
           onHomeClick={() => setCurrentView("home")}
+          onUserClick={() => setCurrentView("user")} 
           searchValue={searchQuery}
           onSearchChange={setSearchQuery}
           cartCount={cartItems.reduce((acc, item) => acc + item.quantity, 0)} 
@@ -240,7 +271,8 @@ export default function Homepage() {
       
       <main className="pt-20 md:pt-24 2xl:pt-32 pb-10 px-4 md:px-8 2xl:px-16 max-w-[2000px] mx-auto space-y-10 2xl:space-y-20">
         
-        {currentView === 'cart' ? (
+        {/* VIEW 1: CART PAGE */}
+        {currentView === 'cart' && (
           <div className="animate-in fade-in slide-in-from-right-4 duration-300">
              <button 
                 onClick={() => setCurrentView('home')}
@@ -251,54 +283,71 @@ export default function Homepage() {
              </button>
              <CartPage cartItems={cartItems} onRemoveItem={removeFromCart} />
           </div>
-        ) : (
+        )}
+
+        {/* VIEW 2: USER PROFILE PAGE */}
+        {currentView === 'user' && (
+           <UserProfile 
+              onBack={() => setCurrentView("home")}
+              onLogout={onLogout}
+              username={username}
+           />
+        )}
+
+        {/* VIEW 3: HOME PAGE */}
+        {currentView === 'home' && (
           <div className="animate-in fade-in slide-in-from-left-4 duration-300">
-            {/* ads section */}
-            <div className="relative w-full h-[200px] md:h-[400px] 2xl:h-[600px] rounded-3xl overflow-hidden shadow-2xl group transition-all duration-500 hover:shadow-cyan-500/20">
-              
-              {heroSlides.map((slide, index) => (
-                <div 
-                    key={slide.id}
-                    className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                        index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
-                    }`}
-                >
-                    <div className={`absolute inset-0 bg-gradient-to-r ${slide.gradient} animate-gradient-x`}></div>
-                    <div 
-                        className="absolute top-0 right-0 w-full h-full opacity-20"
-                        style={{ backgroundImage: `url('${slide.texture}')` }}
-                    ></div>
-                    <div className="relative z-10 h-full flex flex-col justify-center px-6 md:px-12 2xl:px-24">
-                        <span className="text-cyan-400 font-bold tracking-widest text-sm md:text-lg 2xl:text-2xl mb-2">
-                            {slide.subtitle}
+            
+            {/* 1. STATIC HERO BANNER (TOP) */}
+            <div className="relative w-full h-[250px] md:h-[400px] 2xl:h-[500px] rounded-3xl overflow-hidden shadow-2xl group transition-all duration-500 hover:shadow-cyan-500/20 bg-gradient-to-r from-blue-900 to-cyan-900 flex items-center">
+                {/* Background Pattern */}
+                <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/diagmonds-light.png')]"></div>
+                
+                {/* Content Layer */}
+                <div className="relative z-10 px-8 md:px-16 2xl:px-32 w-full max-w-4xl">
+                    <h3 className="text-cyan-400 font-bold tracking-widest text-sm md:text-lg 2xl:text-2xl mb-2 uppercase">
+                        Heavy Duty Gear
+                    </h3>
+                    <h1 className="text-5xl md:text-7xl 2xl:text-9xl font-black italic mb-6 leading-none tracking-tighter">
+                        BUILD YOUR <br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-white">
+                            DREAM GYM
                         </span>
-                        <h1 className="text-4xl md:text-6xl 2xl:text-8xl font-black italic mb-4 2xl:mb-8 drop-shadow-lg leading-tight py-4 pr-8">
-                            {slide.title} <br/> 
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-white pb-4 pr-4">
-                                {slide.highlight}
-                            </span>
-                        </h1>
-                    </div>
+                    </h1>
+                    <button className="bg-cyan-500 hover:bg-cyan-400 text-black font-bold py-3 px-8 rounded-full shadow-[0_0_20px_rgba(34,211,238,0.5)] transition-all hover:scale-105">
+                        Shop Equipment
+                    </button>
                 </div>
-              ))}
-              <div className="absolute bottom-6 left-6 md:left-12 2xl:left-24 z-20 flex gap-3">
-                 {heroSlides.map((_, index) => (
-                    <button
-                        key={index}
-                        onClick={() => setCurrentSlide(index)}
-                        className={`transition-all duration-300 rounded-full shadow-lg ${
-                            currentSlide === index 
-                            ? "w-8 h-3 bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.8)]" 
-                            : "w-3 h-3 bg-white/30 hover:bg-white"
-                        }`}
-                        aria-label={`Go to slide ${index + 1}`}
-                    />
-                 ))}
-              </div>
             </div>
 
-            {/* CATEGORIES */}
-            <div className="space-y-4 2xl:space-y-8 mt-10">
+            {/* 2. EXPANDING CARDS (MIDDLE - Labeled Popular Items) */}
+            <div className="mt-16">
+               <h2 className="text-xl md:text-2xl 2xl:text-4xl font-bold italic tracking-wide mb-6">Popular Items</h2>
+               
+               {/* Flex Container for Animation */}
+               <div className="flex w-full h-[400px] gap-2 md:gap-4">
+                  {popularItemsSlides.map((slide) => (
+                    <div
+                      key={slide.id}
+                      // flex-1 is default (collapsed). hover:flex-[5] expands it.
+                      className="relative flex-1 rounded-[20px] bg-cover bg-center cursor-pointer transition-[flex] duration-500 ease-in-out hover:flex-[5] group overflow-hidden" 
+                      style={{ backgroundImage: `url('${slide.image}')` }}
+                    >
+                        {/* Overlay to darken background for text readability */}
+                        <div className="absolute inset-0 bg-black/30 group-hover:bg-transparent transition-colors duration-500" />
+                        
+                        {/* Text that appears on hover/always visible but styled */}
+                        <div className="absolute bottom-6 left-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100 whitespace-nowrap">
+                            <h3 className="text-white text-3xl font-black italic uppercase shadow-black drop-shadow-lg">{slide.title}</h3>
+                            <div className="w-12 h-1 bg-cyan-400 mt-2"></div>
+                        </div>
+                    </div>
+                  ))}
+               </div>
+            </div>
+
+            {/* 3. CATEGORY FILTERS & PRODUCT GRID (BOTTOM) */}
+            <div className="space-y-4 2xl:space-y-8 mt-16">
               <h2 className="text-xl md:text-2xl 2xl:text-4xl font-bold italic tracking-wide">Browse by Category</h2>
               <div className="flex gap-4 2xl:gap-8 overflow-x-auto pb-4 scrollbar-hide">
                 {categories.map((cat, index) => (
@@ -317,7 +366,6 @@ export default function Homepage() {
               </div>
             </div>
 
-            {/* PRODUCTS GRID */}
             <div className="space-y-4 2xl:space-y-8 mt-10">
               <div className="flex justify-between items-end">
                 <h2 className="text-xl md:text-2xl 2xl:text-4xl font-bold italic tracking-wide">
@@ -384,7 +432,6 @@ export default function Homepage() {
                                 if (item.variants && item.variants.length > 0) {
                                     setSelectedProduct(item);
                                 } else {
-                                    // SAFELY PARSE PRICE
                                     const priceStr = item.price.toString();
                                     const match = priceStr.match(/(\d+)/); 
                                     const safePrice = match ? parseInt(match[0]) : 0;
