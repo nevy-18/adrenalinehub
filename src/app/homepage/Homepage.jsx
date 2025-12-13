@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Topbar from '@/components/Topbar';
 import { Product } from '@/app/data/Product';
 import CartPage from '@/app/cart/page';
@@ -7,30 +8,44 @@ import { ArrowLeft, ShoppingCart, Star, X } from 'lucide-react';
 
 // --- QUICK VIEW MODAL COMPONENT ---
 const QuickViewModal = ({ product, onClose, onAddToCart }) => {
+  const router = useRouter(); 
+
   if (!product) return null;
 
- 
   const variants = product.variants || [];
-  
-
   const [selectedVariant, setSelectedVariant] = useState(variants.length > 0 ? variants[0] : null);
   const [quantity, setQuantity] = useState(1);
 
 
-  const currentPrice = selectedVariant ? selectedVariant.price : parseInt(product.price.replace(/\D/g, '') || 0);
-  
+  const parsePrice = (priceStr) => {
+    if (typeof priceStr === 'number') return priceStr;
+    const match = priceStr.match(/(\d+)/); 
+    return match ? parseInt(match[0]) : 0;
+  };
 
+  const currentPrice = selectedVariant ? selectedVariant.price : parsePrice(product.price);
   const originalPrice = Math.floor(currentPrice * 1.2);
 
   const handleAddToCart = () => {
     onAddToCart({ 
       ...product, 
-
       price: currentPrice, 
       selectedSize: selectedVariant ? selectedVariant.name : "One Size",
       quantity 
     });
     onClose();
+  };
+
+  // Handler for Buy Now - 
+  const handleBuyNow = () => {
+  
+    onAddToCart({ 
+        ...product, 
+        price: currentPrice, 
+        selectedSize: selectedVariant ? selectedVariant.name : "One Size",
+        quantity 
+      });
+    router.push('/buy');
   };
 
   return (
@@ -48,7 +63,6 @@ const QuickViewModal = ({ product, onClose, onAddToCart }) => {
            <div className={`w-full h-64 md:h-full ${product.image?.includes('http') ? '' : product.image} bg-contain bg-center bg-no-repeat relative z-10`} style={product.image?.includes('http') ? { backgroundImage: `url(${product.image})` } : {}}></div>
         </div>
 
-  
         <div className="w-full md:w-1/2 p-6 md:p-10 flex flex-col justify-center text-left">
           <span className="text-cyan-400 text-sm font-bold tracking-widest uppercase mb-2">{product.category || "Equipment"}</span>
           <h2 className="text-3xl md:text-4xl font-black text-white mb-2 leading-tight">{product.name}</h2>
@@ -60,14 +74,12 @@ const QuickViewModal = ({ product, onClose, onAddToCart }) => {
           
           <p className="text-gray-300 text-base leading-relaxed mb-8">{product.description || "Take your workout to the next level with this premium equipment."}</p>
           
-
           <div className="flex items-end gap-4 mb-8 border-b border-gray-700 pb-8">
              <span className="text-4xl font-bold text-white">${currentPrice}</span>
              <span className="text-gray-500 line-through mb-1 text-lg">${originalPrice}</span>
           </div>
 
           <div className="flex flex-col gap-6 mb-8">
-
             {variants.length > 0 && (
               <div>
                 <span className="text-sm text-gray-400 uppercase font-bold tracking-wider mb-3 block">
@@ -77,7 +89,6 @@ const QuickViewModal = ({ product, onClose, onAddToCart }) => {
                     {variants.map((variant, index) => (
                         <button 
                             key={index}
-           
                             onClick={() => setSelectedVariant(variant)}
                             className={`px-4 py-3 rounded-lg font-bold border transition-all text-sm ${
                                 selectedVariant && selectedVariant.name === variant.name
@@ -109,7 +120,8 @@ const QuickViewModal = ({ product, onClose, onAddToCart }) => {
           </div>
 
           <div className="flex flex-col gap-3">
-            <button onClick={handleAddToCart} className="w-full bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-lg py-4 rounded-xl shadow-[0_0_20px_rgba(34,211,238,0.4)] hover:shadow-[0_0_30px_rgba(34,211,238,0.6)] transition-all active:scale-95">BUY NOW</button>
+            {/* FIXED: Replaced invalid component call with handleBuyNow */}
+            <button onClick={handleBuyNow} className="w-full bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-lg py-4 rounded-xl shadow-[0_0_20px_rgba(34,211,238,0.4)] hover:shadow-[0_0_30px_rgba(34,211,238,0.6)] transition-all active:scale-95">BUY NOW</button>
             <button onClick={handleAddToCart} className="w-full bg-transparent border border-gray-600 hover:border-white text-white font-semibold py-4 rounded-xl flex items-center justify-center gap-2 transition-all hover:bg-white/5">
                <ShoppingCart className="w-5 h-5" /> Add to Cart
             </button>
@@ -122,6 +134,7 @@ const QuickViewModal = ({ product, onClose, onAddToCart }) => {
 
 // --- MAIN HOMEPAGE ---
 export default function Homepage() {
+  const router = useRouter(); // Initialize router here as well if needed
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentView, setCurrentView] = useState("home"); 
@@ -158,7 +171,6 @@ export default function Homepage() {
     }
   ];
 
-
   useEffect(() => {
     const timer = setInterval(() => {
         setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
@@ -168,7 +180,6 @@ export default function Homepage() {
 
   const addToCart = (productToAdd) => {
     setCartItems((prevItems) => {
-
       const isMatch = (item) => 
         item.id === productToAdd.id && item.selectedSize === productToAdd.selectedSize;
 
@@ -183,13 +194,11 @@ export default function Homepage() {
       } else {
         return [...prevItems, { 
           ...productToAdd, 
-  
           quantity: productToAdd.quantity || 1,
           selectedSize: productToAdd.selectedSize || "One Size"
         }];
       }
     });
-
   };
 
   const removeFromCart = (indexToRemove) => {
@@ -254,16 +263,11 @@ export default function Homepage() {
                         index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
                     }`}
                 >
-
                     <div className={`absolute inset-0 bg-gradient-to-r ${slide.gradient} animate-gradient-x`}></div>
-                    
-                    {/* Texture Overlay */}
                     <div 
                         className="absolute top-0 right-0 w-full h-full opacity-20"
                         style={{ backgroundImage: `url('${slide.texture}')` }}
                     ></div>
-
-                    {/* Content */}
                     <div className="relative z-10 h-full flex flex-col justify-center px-6 md:px-12 2xl:px-24">
                         <span className="text-cyan-400 font-bold tracking-widest text-sm md:text-lg 2xl:text-2xl mb-2">
                             {slide.subtitle}
@@ -277,8 +281,6 @@ export default function Homepage() {
                     </div>
                 </div>
               ))}
-
-              {/* PAGINATION CIRCLES */}
               <div className="absolute bottom-6 left-6 md:left-12 2xl:left-24 z-20 flex gap-3">
                  {heroSlides.map((_, index) => (
                     <button
@@ -293,7 +295,6 @@ export default function Homepage() {
                     />
                  ))}
               </div>
-
             </div>
 
             {/* CATEGORIES */}
@@ -375,22 +376,22 @@ export default function Homepage() {
                         </div>
                         <p className="text-gray-400 text-xs 2xl:text-sm">Pro Equipment</p>
                         <div className="flex justify-between items-center mt-2 2xl:mt-4">
-                          {/* Display the price range string (e.g., $30 - $90) on the card */}
                           <span className="text-cyan-400 font-bold text-lg 2xl:text-2xl">{item.price}</span>
                           
-                          {/* Button on the card */}
                           <button 
                             onClick={(e) => {
                                 e.stopPropagation(); 
-
                                 if (item.variants && item.variants.length > 0) {
-
                                     setSelectedProduct(item);
                                 } else {
+                                    // SAFELY PARSE PRICE
+                                    const priceStr = item.price.toString();
+                                    const match = priceStr.match(/(\d+)/); 
+                                    const safePrice = match ? parseInt(match[0]) : 0;
 
                                     addToCart({
                                         ...item,
-                                        price: parseInt(item.price.replace(/\D/g, '') || 0), 
+                                        price: safePrice,
                                     });
                                 }
                             }}
