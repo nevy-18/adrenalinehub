@@ -1,8 +1,10 @@
+'use client'; // Ensure this is client-side
+
 import { useState } from 'react';
 import { Product } from '@/app/data/Product';
-import { XIcon,ShoppingCart, Search, Menu , User, TrendingUp, AlertCircle, Trash2, ArrowLeft} from 'lucide-react';
+import { XIcon, ShoppingCart, Search, Menu, User, TrendingUp, AlertCircle, Trash2, ArrowLeft } from 'lucide-react';
 
-const Topbar = ({onUserClick , onCartClick, searchValue, onSearchChange}) => {
+const Topbar = ({ onUserClick, onCartClick, searchValue, onSearchChange, cartCount }) => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   // Fallback "Suggested" products - displayed when search is empty
@@ -21,12 +23,44 @@ const Topbar = ({onUserClick , onCartClick, searchValue, onSearchChange}) => {
   const isSearchEmpty = !searchValue || searchValue.length === 0;
   const hasResults = searchResults.length > 0;
 
+  // --- NEW: Helper function to render search images safely ---
+  const renderSearchImage = (item) => {
+    const img = item.image || "";
+    const isImage = 
+      img.startsWith('http') || 
+      img.startsWith('/') || 
+      img.includes('.png') || 
+      img.includes('.jpg') || 
+      img.includes('.jpeg') || 
+      img.includes('.webp');
+
+    if (isImage) {
+      return (
+        <img 
+          src={img} 
+          alt={item.name} 
+          className="w-16 h-16 md:w-20 md:h-20 2xl:w-28 2xl:h-28 object-cover rounded-xl shadow-lg shrink-0"
+          onError={(e) => {
+             e.target.onerror = null; 
+             e.target.src = "https://placehold.co/100x100?text=No+Image";
+          }}
+        />
+      );
+    } else {
+      // It's a CSS Gradient/Class
+      return (
+        <div className={`w-16 h-16 md:w-20 md:h-20 2xl:w-28 2xl:h-28 ${img} rounded-xl flex items-center justify-center shrink-0 shadow-lg`}>
+           <span className="text-sm md:text-lg 2xl:text-2xl font-black text-white/30 italic">{item.name.charAt(0)}</span>
+        </div>
+      );
+    }
+  };
+
   return (
     <nav className="fixed top-0 z-50 w-full bg-[#1a1a40]/90 backdrop-blur-md border-b border-white/10 px-4 md:px-8 2xl:px-16 py-3 2xl:py-6 flex items-center justify-between transition-all">
 
       {/* Logo Section */}
-      <div className="flex items-center  text-xl md:text-2xl 2xl:text-4xl font-black italic tracking-wider cursor-pointer">
-        
+      <div className="flex items-center text-xl md:text-2xl 2xl:text-4xl font-black italic tracking-wider cursor-pointer">
           ADRENALINE<span className="text-cyan-400">HUB</span>
       </div>
 
@@ -37,9 +71,9 @@ const Topbar = ({onUserClick , onCartClick, searchValue, onSearchChange}) => {
           <input 
             type="text" 
             placeholder="Search for equipment..." 
-            className="bg-transparent border-none outline-none text-lg lg:text-xl 2xl:text-3xl w-full placeholder-gray-400 text-white focus:ring-0 transition-all h-full" // size of placeholder
+            className="bg-transparent border-none outline-none text-lg lg:text-xl 2xl:text-3xl w-full placeholder-gray-400 text-white focus:ring-0 transition-all h-full"
             value={searchValue || ""} 
-            onChange={(e) => onSearchChange(e.target.value)} // parte to ng connection ng filtering
+            onChange={(e) => onSearchChange(e.target.value)} 
             onFocus={() => setIsSearchFocused(true)}
             onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
           />
@@ -47,7 +81,6 @@ const Topbar = ({onUserClick , onCartClick, searchValue, onSearchChange}) => {
             <button 
               onClick={() => {
                 onSearchChange(""); 
-          
               }}
               className="text-gray-400 hover:text-white transition-colors"
             >
@@ -85,9 +118,10 @@ const Topbar = ({onUserClick , onCartClick, searchValue, onSearchChange}) => {
                       setIsSearchFocused(false);
                     }}
                   >
-                    <div className={`w-16 h-16 md:w-20 md:h-20 2xl:w-28 2xl:h-28 ${product.image} rounded-xl flex items-center justify-center shrink-0 shadow-lg`}>
-                      <span className="text-sm md:text-lg 2xl:text-2xl font-black text-white/30 italic">{product.name.charAt(0)}</span>
-                    </div>
+                    {/* --- FIXED IMAGE RENDERING HERE --- */}
+                    {renderSearchImage(product)}
+                    {/* ---------------------------------- */}
+
                     <div className="flex-grow min-w-0">
                       <p className="text-lg md:text-xl 2xl:text-3xl font-bold text-gray-200 group-hover/item:text-cyan-400 transition-colors truncate">{product.name}</p>
                       <p className="text-xs text-gray-500">{product.category}</p>
@@ -113,15 +147,24 @@ const Topbar = ({onUserClick , onCartClick, searchValue, onSearchChange}) => {
 
     
       <div className="flex items-center gap-4 md:gap-6 2xl:gap-12">
-        <button className="p-3 2xl:p-5 hover:bg-white/10 rounded-full relative group transition-all"
-        onClick={onCartClick}>
+        <button 
+            className="p-3 2xl:p-5 hover:bg-white/10 rounded-full relative group transition-all"
+            onClick={onCartClick}
+        >
           <ShoppingCart className="w-7 h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 2xl:w-12 2xl:h-12 text-white transition-transform group-hover:scale-110" />
-          <span className="absolute top-1 right-0 bg-red-500 text-[10px] 2xl:text-sm font-bold px-1.5 2xl:px-2 py-0.5 2xl:py-1 rounded-full border border-[#1a1a40]">2</span>
+          
+          {/* Use dynamic cartCount here */}
+          {cartCount > 0 && (
+             <span className="absolute top-1 right-0 bg-red-500 text-[10px] 2xl:text-sm font-bold px-1.5 2xl:px-2 py-0.5 2xl:py-1 rounded-full border border-[#1a1a40]">
+                {cartCount}
+             </span>
+          )}
         </button>
+
         {/* User Icons Section */}
         <button 
           className="p-3 2xl:p-5 hover:bg-white/10 rounded-full group transition-all"
-          onClick={onUserClick}  // 2. Add the click handler here 👇
+          onClick={onUserClick}  
         >
           <User className="w-7 h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 2xl:w-12 2xl:h-12 text-white transition-transform group-hover:scale-110" />
         </button>

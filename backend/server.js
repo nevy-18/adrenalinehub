@@ -4,7 +4,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 
 const app = express();
-
+const PORT = 3001; // <--- ENSURE THIS IS 3001
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -25,11 +25,12 @@ db.connect(err => {
     }
 });
 
-// Registration Endpoint
+// --- ROUTES ---
+
+// 1. Registration
 app.post('/register', (req, res) => {
     const { username, email, password } = req.body;
     const sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
-    
     db.query(sql, [username, email, password], (err, result) => {
         if (err) {
             console.error(err);
@@ -39,36 +40,25 @@ app.post('/register', (req, res) => {
         }
     });
 });
+
+// 2. Login
 app.post('/login', (req, res) => {
-    console.log("--- LOGIN ATTEMPT RECEIVED ---");
-    console.log("Body:", req.body); 
-
     const { email, username, password } = req.body;
-    
-    
     let identifier = email || username;
-
-  //Remove empty spaces (Trimming)
+    
     if (identifier) identifier = identifier.toString().trim();
     const cleanPassword = password ? password.toString().trim() : '';
-
-    console.log("Identifier used for SQL:", identifier);
-    console.log("Password used for SQL:", cleanPassword);
 
     if (!identifier || !cleanPassword) {
         return res.status(400).send({ message: 'Missing credentials' });
     }
     
-    // 3. The Query
     const sql = "SELECT * FROM users WHERE (email = ? OR username = ?) AND password = ?";
-    
     db.query(sql, [identifier, identifier, cleanPassword], (err, results) => {
         if (err) {
             console.error("SQL ERROR:", err);
             res.status(500).send({ message: 'Server error' });
         } else {
-            console.log("SQL Results found:", results.length); 
-
             if (results.length > 0) {
                 res.status(200).send({ 
                     message: 'Login successful', 
@@ -81,6 +71,33 @@ app.post('/login', (req, res) => {
     });
 });
 
-app.listen(3001, () => {
-    console.log('Server running on port 3001');
+// 3. Update Profile
+app.post('/api/update-profile', (req, res) => {
+    const { username, type, newEmail, currentPassword, newPassword } = req.body;
+    const verifySql = "SELECT * FROM users WHERE username = ? AND password = ?";
+
+    db.query(verifySql, [username, currentPassword], (err, results) => {
+        if (err) return res.status(500).json({ success: false, message: 'Server error' });
+        if (results.length === 0) return res.status(401).json({ success: false, message: 'Incorrect current password' });
+
+        if (type === 'email') {
+            const updateEmailSql = "UPDATE users SET email = ? WHERE username = ?";
+            db.query(updateEmailSql, [newEmail, username], (updateErr) => {
+                if (updateErr) return res.status(500).json({ success: false, message: 'Failed to update email' });
+                res.json({ success: true, message: 'Email updated successfully' });
+            });
+        } else if (type === 'password') {
+            const updatePassSql = "UPDATE users SET password = ? WHERE username = ?";
+            db.query(updatePassSql, [newPassword, username], (updateErr) => {
+                if (updateErr) return res.status(500).json({ success: false, message: 'Failed to update password' });
+                res.json({ success: true, message: 'Password updated successfully' });
+            });
+        } else {
+            res.status(400).json({ success: false, message: 'Invalid update type' });
+        }
+    });
+});
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
