@@ -2,14 +2,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Product } from '@/app/data/Product';
-import { ArrowLeft, ShoppingCart, Star, X, Shield, Activity, CheckCircle, Scale } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Star, X, Shield, Flame, Activity, Scale, CheckCircle, Lock, Search } from 'lucide-react';
 
 import Topbar from '@/components/Topbar';
 import CartPage from '../cart/page';
 import AdminDashboard from '../admindashboard/page';
 import UserProfile from '../user/page';
+import QuickViewModal from '../QuickviewModal/page';
 
-// --- NEW IMPORTS ---
+// --- NEW IMPORTS FOR MODALS ---
 import { SelectionModal, CompareResultModal, FloatingCompareButton } from '@/components/Comparemodule/page';
 import { BeastModeToggle, getBeastTheme } from '@/components/Beastmode/page';
 
@@ -18,11 +19,6 @@ const getNumericPrice = (price) => {
     if (typeof price === 'number') return price;
     const match = price.toString().match(/(\d+)/);
     return match ? parseInt(match[0]) : 0;
-};
-
-const calculateFinalPrice = (originalPrice, isBeastMode) => {
-    const num = getNumericPrice(originalPrice);
-    return isBeastMode ? Math.floor(num * 0.85) : num; // 15% Discount
 };
 
 // ==========================================
@@ -46,68 +42,6 @@ const ThankYouModal = ({ onClose, onViewOrders, isBeastMode, pointsEarned }) => 
 };
 
 // ==========================================
-// 2. QUICK VIEW MODAL
-// ==========================================
-const QuickViewModal = ({ product, onClose, onAddToCart, onBuyNow, onOpenCompare, isBeastMode }) => {
-  if (!product) return null;
-  const variants = product.variants || [];
-  const [selectedVariant, setSelectedVariant] = useState(variants.length > 0 ? variants[0] : null);
-  const [quantity, setQuantity] = useState(1);
-  const theme = getBeastTheme(isBeastMode);
-
-  const parsePrice = (priceInput) => { if (priceInput === undefined || priceInput === null) return 0; if (typeof priceInput === 'number') return priceInput; const match = priceInput.toString().match(/(\d+)/); return match ? parseInt(match[0]) : 0; };
-  const currentPrice = selectedVariant && selectedVariant.price !== undefined ? parsePrice(selectedVariant.price) : parsePrice(product.price);
-  
-  // Apply Beast Mode Discount Logic
-  const finalPrice = calculateFinalPrice(currentPrice, isBeastMode);
-  const originalPrice = Math.floor(currentPrice * 1.2);
-
-  const currentImage = selectedVariant?.image || product.image;
-  const handleAddToCart = () => { onAddToCart({ ...product, price: finalPrice, image: currentImage, selectedSize: selectedVariant ? selectedVariant.name : "One Size", quantity }); onClose(); };
-  const handleBuy = () => { onBuyNow({ id: Math.floor(Math.random() * 10000).toString(), items: product.name, price: finalPrice * quantity, image: currentImage, selectedSize: selectedVariant ? selectedVariant.name : "One Size", quantity: quantity, date: new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: '2-digit' }), status: "Processing", deliveryDate: "Pending" }); onClose(); };
-  const isUrl = (str) => str && (str.includes('http') || str.includes('/') || str.includes('.'));
-
-  return (
-    <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity" onClick={onClose}></div>
-      <div className={`relative bg-[#1e293b] w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row border ${theme.border} animate-in fade-in zoom-in-95 duration-200`}>
-        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-white z-20 hover:bg-white/10 p-1 rounded-full transition-colors"><X className="w-6 h-6" /></button>
-        <div className="w-full md:w-1/2 bg-gradient-to-br from-gray-900 to-black flex items-center justify-center p-8 relative overflow-hidden group">
-           <span className="absolute text-white/5 text-6xl font-black uppercase -rotate-12 select-none z-0">{product.category || "GYM"}</span>
-           <div className="relative z-10 w-full h-64 md:h-full flex items-center justify-center transition-all duration-500">
-              {isUrl(currentImage) ? <img key={currentImage} src={currentImage} alt={product.name} className="w-full h-full object-contain drop-shadow-2xl animate-in fade-in zoom-in-90 duration-300" /> : <div className={`w-full h-full ${currentImage} bg-contain bg-center bg-no-repeat`}></div>}
-           </div>
-        </div>
-        <div className="w-full md:w-1/2 p-6 md:p-10 flex flex-col justify-center text-left bg-[#1e293b]">
-          <span className={`${theme.text} text-sm font-bold tracking-widest uppercase mb-2`}>{product.category || "Equipment"}</span>
-          <h2 className="text-3xl md:text-4xl font-black text-white mb-2 leading-tight">{product.name}</h2>
-          <div className="flex items-center gap-2 mb-4 text-yellow-400"><div className="flex">{[...Array(5)].map((_, i) => <Star key={i} className={`w-4 h-4 ${i < Math.floor(product.rating) ? "fill-current" : "text-gray-600"}`} />)}</div><span className="text-gray-300 text-sm ml-2">({product.rating} Reviews)</span></div>
-          <p className="text-gray-300 text-base leading-relaxed mb-6">{product.description || "Take your workout to the next level with this premium equipment."}</p>
-          {variants.length > 0 && (
-            <div className="mb-6"><p className="text-gray-400 text-xs font-bold uppercase mb-3">Select Option:</p><div className="flex flex-wrap gap-2">{variants.map((variant, idx) => <button key={idx} onClick={() => setSelectedVariant(variant)} className={`px-4 py-2 rounded-lg text-sm font-bold border transition-all ${selectedVariant === variant ? `${isBeastMode ? 'bg-red-500 border-red-500' : 'bg-cyan-500 border-cyan-500'} text-black shadow-[0_0_10px_rgba(255,255,255,0.3)]` : "bg-transparent text-gray-300 border-gray-600 hover:border-white"}`}>{variant.name}</button>)}</div></div>
-          )}
-          <div className="flex items-end gap-4 mb-8 border-b border-gray-700 pb-8">
-              <span key={finalPrice} className={`text-4xl font-bold ${isBeastMode ? 'text-red-500 animate-pulse' : 'text-white'}`}>${finalPrice}</span>
-              <span className="text-gray-500 line-through mb-1 text-lg">${originalPrice}</span>
-          </div>
-          <div className="flex flex-col gap-4">
-              <div className="flex gap-4">
-                  <div className="flex items-center bg-[#111827] rounded-xl border border-gray-700 px-2"><button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-8 h-full text-gray-400 hover:text-white font-bold">-</button><span className="w-8 text-center text-white font-bold">{quantity}</span><button onClick={() => setQuantity(quantity + 1)} className="w-8 h-full text-gray-400 hover:text-white font-bold">+</button></div>
-                  <button onClick={handleBuy} className={`flex-1 ${theme.button} text-[#1a1a40] font-bold text-lg py-3 rounded-xl shadow-lg transition-all active:scale-95`}>BUY NOW</button>
-              </div>
-              <button onClick={handleAddToCart} className="w-full bg-transparent border border-gray-600 hover:border-white text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-all hover:bg-white/5"><ShoppingCart className="w-5 h-5" /> Add to Cart</button>
-              
-              <button onClick={() => { onClose(); onOpenCompare(product.id); }} className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold border border-gray-700 text-gray-400 hover:border-gray-500 hover:text-white transition-all">
-                  <Scale className="w-4 h-4" /> Compare with other items
-              </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// ==========================================
 // MAIN HOMEPAGE COMPONENT
 // ==========================================
 export default function Homepage({ onLogout, username, isAdmin }) {
@@ -124,23 +58,39 @@ export default function Homepage({ onLogout, username, isAdmin }) {
   const [activeSlide, setActiveSlide] = useState(0);
   const [showThankYou, setShowThankYou] = useState(false);
   
-  // New States
+  // --- NEW FEATURE STATES ---
   const [isBeastMode, setIsBeastMode] = useState(false);
   const [notification, setNotification] = useState(null);
+  
+  // COMPARE STATES
   const [showSelectorModal, setShowSelectorModal] = useState(false);
   const [compareList, setCompareList] = useState([]); 
   const [preSelectedId, setPreSelectedId] = useState(null);
   const [showCompareModal, setShowCompareModal] = useState(false);
   const [lastEarnedPoints, setLastEarnedPoints] = useState(0);
 
-  const theme = getBeastTheme(isBeastMode);
-
-  // --- CALCULATE TOTAL POINTS ---
+  // --- 1. CALCULATE TOTAL POINTS ---
   const totalPoints = useMemo(() => {
         const basePoints = 0; 
         const orderPoints = pastOrders.reduce((total, order) => total + getNumericPrice(order.price), 0);
         return Math.floor(basePoints + orderPoints);
   }, [pastOrders]);
+
+  // --- 2. DETERMINE TIER & DISCOUNT ---
+  const tierData = useMemo(() => {
+      // Define Tiers and their Discounts
+      if (totalPoints >= 10000) return { name: "Adamantite", discount: 0.30, next: 20000, color: "text-red-600" }; // 30%
+      if (totalPoints >= 5000) return { name: "Diamond", discount: 0.25, next: 10000, color: "text-cyan-200" };    // 25%
+      if (totalPoints >= 2500) return { name: "Platinum", discount: 0.20, next: 5000, color: "text-cyan-400" };     // 20%
+      if (totalPoints >= 1000) return { name: "Gold", discount: 0.15, next: 2500, color: "text-yellow-400" };       // 15% (Unlock)
+      if (totalPoints >= 500) return { name: "Silver", discount: 0.10, next: 1000, color: "text-gray-300" };        // 10%
+      if (totalPoints >= 200) return { name: "Bronze", discount: 0.05, next: 500, color: "text-orange-400" };       // 5%
+      return { name: "Newbie", discount: 0.00, next: 200, color: "text-gray-500" };                                 // 0%
+  }, [totalPoints]);
+
+  const currentDiscountRate = isBeastMode ? tierData.discount : 0;
+
+  const theme = getBeastTheme(isBeastMode);
 
   const categories = ["All", "Strength", "Cardio", "Accessories", "Recovery"];
   const heroSlides = [
@@ -189,13 +139,12 @@ export default function Homepage({ onLogout, username, isAdmin }) {
       
       {showThankYou && <ThankYouModal onClose={() => { setShowThankYou(false); setCurrentView('home'); }} onViewOrders={() => { setShowThankYou(false); setCurrentView('user'); }} isBeastMode={isBeastMode} pointsEarned={lastEarnedPoints} />}
       
-      {selectedProduct && <QuickViewModal product={selectedProduct} onClose={() => setSelectedProduct(null)} onAddToCart={addToCart} onBuyNow={handleBuyNow} onOpenCompare={openCompareSelector} isBeastMode={isBeastMode} compareList={[]} toggleCompare={()=>{}} />}
+      {/* QUICK VIEW - Passing Discount Rate */}
+      {selectedProduct && <QuickViewModal product={selectedProduct} onClose={() => setSelectedProduct(null)} onAddToCart={addToCart} onBuyNow={handleBuyNow} onOpenCompare={openCompareSelector} isBeastMode={isBeastMode} discountRate={currentDiscountRate} compareList={[]} toggleCompare={()=>{}} />}
       
-      {/* SELECTION MODAL & RESULT */}
       <SelectionModal isOpen={showSelectorModal} onClose={() => setShowSelectorModal(false)} allProducts={Product} onConfirmSelection={handleConfirmComparison} preSelectedId={preSelectedId} isBeastMode={isBeastMode} />
       {showCompareModal && compareList.length === 2 && <CompareResultModal products={compareList} onClose={() => { setShowCompareModal(false); setCompareList([]); }} isBeastMode={isBeastMode} />}
 
-      {/* NOTIFICATION */}
       {notification && (
         <div className={`fixed bottom-4 left-4 z-[200] bg-[#1f2937] border ${theme.border} p-4 rounded-xl shadow-2xl animate-in slide-in-from-left duration-500 flex items-center gap-4`}>
             <div className={`w-10 h-10 ${isBeastMode ? 'bg-red-500/20 text-red-500' : 'bg-cyan-500/20 text-cyan-400'} rounded-full flex items-center justify-center`}><Activity className="w-5 h-5" /></div>
@@ -203,26 +152,27 @@ export default function Homepage({ onLogout, username, isAdmin }) {
         </div>
       )}
 
-      {/* TOPBAR */}
       <div className="py-4 text-white relative z-50">
         <Topbar onCartClick={() => setCurrentView("cart")} onUserClick={() => setCurrentView("user")} searchValue={searchQuery} onSearchChange={setSearchQuery} cartCount={cartItems.reduce((acc, item) => acc + item.quantity, 0)} />
         
-        {/* ACTION BUTTONS: ADMIN, BEAST MODE, COMPARE */}
         <div className="fixed bottom-4 right-4 z-[100] flex flex-col items-end gap-2 animate-in fade-in duration-500">
              {currentView === 'home' && <FloatingCompareButton onClick={() => openCompareSelector()} isBeastMode={isBeastMode} />}
-             {isAdmin && <button onClick={() => setCurrentView("admin")} className="flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white px-4 py-3 rounded-full font-bold shadow-lg shadow-red-600/30 transition-all hover:scale-105"><Shield className="w-4 h-4" /> Admin</button>}
+             {isAdmin && <button onClick={() => setCurrentView("admin")} className="flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-full font-bold shadow-lg shadow-red-600/30 transition-all hover:scale-105"><Shield className="w-4 h-4" /> Admin</button>}
+             
+             {/* BEAST MODE TOGGLE - Checks Gold Tier (1000 AP) */}
              <BeastModeToggle isBeastMode={isBeastMode} setIsBeastMode={setIsBeastMode} totalPoints={totalPoints} />
         </div>
       </div>
       
       <main className="pt-20 md:pt-24 2xl:pt-32 pb-10 px-4 md:px-8 2xl:px-16 max-w-[2000px] mx-auto space-y-10 2xl:space-y-20">
         {currentView === 'cart' && <div className="animate-in fade-in slide-in-from-right-4 duration-300"><button onClick={() => setCurrentView('home')} className={`text-xl md:text-2xl 2xl:text-4xl flex items-center gap-2 ${theme.text} hover:text-white mb-6 transition-colors`}><ArrowLeft className=" w-5 h-5" /> Back to Shop</button><CartPage cartItems={cartItems} onRemoveItem={removeFromCart} onCheckout={handleCartCheckout} onBack={() => setCurrentView("home")} /></div>}
-        {currentView === 'user' && <UserProfile onBack={() => setCurrentView("home")} onLogout={onLogout} username={username} orders={pastOrders} isBeastMode={isBeastMode} totalPoints={totalPoints} />}
+        
+        {/* Pass computed tierData to Profile */}
+        {currentView === 'user' && <UserProfile onBack={() => setCurrentView("home")} onLogout={onLogout} username={username} orders={pastOrders} isBeastMode={isBeastMode} totalPoints={totalPoints} tierData={tierData} />}
         {currentView === 'admin' && isAdmin && <AdminDashboard onBack={() => setCurrentView("home")} username={username} />}
 
         {currentView === 'home' && (
           <div className="animate-in fade-in slide-in-from-left-4 duration-300">
-            {/* HERO SLIDER */}
             <div className={`relative w-full h-[250px] md:h-[400px] 2xl:h-[500px] rounded-3xl overflow-hidden shadow-2xl group transition-all duration-500 hover:shadow-${isBeastMode ? 'red' : 'cyan'}-500/20 mb-16`}>
                 {heroSlides.map((slide, index) => (
                     <div key={slide.id} className={`absolute inset-0 transition-opacity duration-1000 ease-in-out bg-gradient-to-r ${slide.gradient} flex items-center ${index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}>
@@ -238,12 +188,12 @@ export default function Homepage({ onLogout, username, isAdmin }) {
                 </div>
             </div>
 
-            {/* EXPANDING CARDS */}
             <div className="space-y-6">
                <h2 className="text-xl md:text-2xl 2xl:text-4xl font-bold italic tracking-wide">Popular Items</h2>
                <div className="flex w-full h-[300px] md:h-[400px] 2xl:h-[500px] gap-2 md:gap-4">
                   {popularItems.map((item, index) => {
-                      const finalPrice = calculateFinalPrice(item.price, isBeastMode);
+                      const base = getNumericPrice(item.price);
+                      const final = Math.floor(base * (1 - currentDiscountRate));
                       return (
                         <div key={item.id} onClick={() => setActiveSlide(index)} className={`relative rounded-[20px] bg-cover bg-center cursor-pointer transition-[flex] duration-700 ease-in-out group overflow-hidden border border-white/10 ${activeSlide === index ? `flex-[5] shadow-[0_0_20px_${isBeastMode ? 'rgba(239,68,68,0.3)' : 'rgba(34,211,238,0.3)'}]` : 'flex-[1] opacity-60 hover:opacity-100 hover:flex-[1.5]'}`} style={{ backgroundImage: `url('${item.image}')` }}>
                             <div className={`absolute inset-0 bg-black/40 transition-colors duration-500 ${activeSlide === index ? 'bg-black/10' : 'group-hover:bg-black/20'}`}></div>
@@ -257,7 +207,6 @@ export default function Homepage({ onLogout, username, isAdmin }) {
                </div>
             </div>
 
-            {/* PRODUCTS */}
             <div className="space-y-4 2xl:space-y-8 mt-16">
               <h2 className="text-xl md:text-2xl 2xl:text-4xl font-bold italic tracking-wide">Browse by Category</h2>
               <div className="flex gap-4 2xl:gap-8 overflow-x-auto pb-4 scrollbar-hide">
@@ -273,7 +222,8 @@ export default function Homepage({ onLogout, username, isAdmin }) {
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 md:gap-6 2xl:gap-8">
                 {filteredProducts && filteredProducts.length > 0 ? (
                   filteredProducts.map((item, index) => {
-                    const finalPrice = calculateFinalPrice(item.price, isBeastMode);
+                    const base = getNumericPrice(item.price);
+                    const final = Math.floor(base * (1 - currentDiscountRate));
                     return (
                         <div key={index} className={`bg-[#1f2937]/60 backdrop-blur-sm rounded-2xl p-3 md:p-4 2xl:p-6 border border-white/10 hover:border-${isBeastMode ? 'red' : 'cyan'}-400/50 hover:-translate-y-2 transition-all duration-300 group shadow-lg flex flex-col justify-between relative`}>
                             <div className={`w-full aspect-square rounded-xl mb-3 2xl:mb-5 relative overflow-hidden flex items-center justify-center bg-gray-800`}>
@@ -289,8 +239,11 @@ export default function Homepage({ onLogout, username, isAdmin }) {
                                 </div>
                                 <p className="text-gray-400 text-xs 2xl:text-sm">Pro Equipment</p>
                                 <div className="flex justify-between items-center mt-2 2xl:mt-4">
-                                    <span className={`${theme.text} font-bold text-lg 2xl:text-2xl`}>${finalPrice}</span>
-                                    <button onClick={(e) => { e.stopPropagation(); if (item.variants && item.variants.length > 0) { setSelectedProduct(item); } else { addToCart({ ...item, price: finalPrice }); } }} className={`bg-white/10 hover:bg-${isBeastMode ? 'red' : 'cyan'}-500 hover:text-[#1a1a40] p-2 2xl:p-3 rounded-lg transition-colors`}><ShoppingCart className="w-4 h-4 2xl:w-6 2xl:h-6" /></button>
+                                    <div>
+                                        <span className={`${theme.text} font-bold text-lg 2xl:text-2xl`}>${final}</span>
+                                        {isBeastMode && <span className="ml-2 text-xs text-gray-500 line-through">${base}</span>}
+                                    </div>
+                                    <button onClick={(e) => { e.stopPropagation(); if (item.variants && item.variants.length > 0) { setSelectedProduct(item); } else { addToCart({ ...item, price: final }); } }} className={`bg-white/10 hover:bg-${isBeastMode ? 'red' : 'cyan'}-500 hover:text-[#1a1a40] p-2 2xl:p-3 rounded-lg transition-colors`}><ShoppingCart className="w-4 h-4 2xl:w-6 2xl:h-6" /></button>
                                 </div>
                             </div>
                         </div>

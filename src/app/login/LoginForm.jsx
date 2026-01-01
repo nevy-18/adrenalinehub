@@ -25,8 +25,9 @@ export default function LoginForm() {
   const [showsignup, setSignup] = useState(false);
   const [error, setError] = useState("");
   
-  // 1. State to hold the username from the backend
+  // State for User Data
   const [currentUser, setCurrentUser] = useState(""); 
+  const [isAdmin, setIsAdmin] = useState(false); // <--- New Admin State
 
   const [loginData, setLoginData] = useState({
     identifier: '', 
@@ -43,36 +44,39 @@ export default function LoginForm() {
 
   const handleLogin = async (e) => {
     e.preventDefault(); 
-    console.log("1. Button Clicked!"); 
+    console.log("Attempting Login..."); 
 
+    // 1. HARDCODED ADMIN CHECK (PRIORITY)
+    // Trim removes accidental spaces
+    if(loginData.identifier.trim() === "admin" && loginData.password === "123") {
+        console.log("Admin Logged In!");
+        setCurrentUser("Administrator");
+        setIsAdmin(true); // Flag as Admin
+        setHomePage(true);
+        // We return early so we don't try to fetch from the backend
+        return; 
+    }
+
+    // 2. STANDARD USER LOGIN (BACKEND)
     const isEmail = loginData.identifier.includes('@');
     
-    // Create the payload for the backend
     const payload = {
         password: loginData.password,
         ...(isEmail ? { email: loginData.identifier } : { username: loginData.identifier })
     };
 
-    console.log("2. Data to send:", payload); 
-
     try {
-        console.log("3. Attempting fetch to localhost:3001...");
-        
         const response = await fetch('http://localhost:3001/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
         });
 
-        console.log("4. Response received:", response);
-
         const data = await response.json();
-        console.log("5. Data parsed:", data);
 
         if (response.ok) {
-            // 2. SAVE USERNAME TO STATE
             setCurrentUser(data.username);
-
+            setIsAdmin(false); // Ensure regular user is NOT admin
             alert("SUCCESS: " + data.message);
             setHomePage(true);
         } else {
@@ -80,7 +84,6 @@ export default function LoginForm() {
             setError(data.message);
         }
     } catch (error) {
-        // NOTE: You cannot access 'response' here because the fetch might have failed completely
         console.error('CRITICAL ERROR:', error);
         alert("SYSTEM ERROR: " + error.message);
     }
@@ -94,12 +97,19 @@ export default function LoginForm() {
     console.log("Feature coming soon!");
   };
 
+  // --- RENDER HOMEPAGE IF LOGGED IN ---
   if (showHomePage) {
-    // 3. PASS USERNAME TO HOMEPAGE
+    // We pass the 'isAdmin' flag to the Homepage component
     return (
         <Homepage 
-            onLogout={() => setHomePage(false)} 
+            onLogout={() => { 
+                setHomePage(false); 
+                setIsAdmin(false); 
+                setCurrentUser("");
+                setLoginData({ identifier: '', password: '' });
+            }} 
             username={currentUser} 
+            isAdmin={isAdmin} // <--- Passing the prop here
         />
     );
   }
@@ -108,6 +118,7 @@ export default function LoginForm() {
     return <SignUp/>;
   }
 
+  // --- RENDER LOGIN FORM ---
   return (
     <div className="fixed inset-0 w-full h-[100dvh] bg-gradient-to-b from-[#1a1a40] to-[#22d3ee] flex items-center justify-center overflow-hidden p-4">
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
