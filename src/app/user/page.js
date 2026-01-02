@@ -170,7 +170,7 @@ const UserProfile = ({ onBack, username, onLogout, orders, isBeastMode, totalPoi
                 <div className="text-left"><p className="font-black italic uppercase text-3xl tracking-tighter">Settings</p><p className="text-[10px] text-gray-500 font-black uppercase mt-1">Modify System UI</p></div>
              </button>
              <button onClick={onLogout} className="md:col-span-2 group bg-red-600/5 p-8 rounded-[32px] border border-red-600/20 hover:bg-red-600 transition-all flex items-center justify-center gap-4">
-                <LogOut className="text-red-500 group-hover:text-white" size={24}/> <span className="font-black uppercase tracking-[0.4em] text-red-500 group-hover:text-white">Abort Session</span>
+                <LogOut className="text-red-500 group-hover:text-white" size={24}/> <span className="font-black uppercase tracking-[0.4em] text-red-500 group-hover:text-white">Log Out</span>
              </button>
          </div>
       </div>
