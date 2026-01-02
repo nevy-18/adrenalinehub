@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Homepage from "../homepage/Homepage";
 import SignUp from "../signup/SignUp";
+import ForgotPassword from "@/components/ForgotPassword"; // Ensure the path is correct
 
 // --- VISUAL COMPONENT ---
 const BackgroundLines = () => (
@@ -23,6 +24,7 @@ const BackgroundLines = () => (
 export default function LoginForm() {
   const [showHomePage, setHomePage] = useState(false);
   const [showsignup, setSignup] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false); // NEW STATE
   const [error, setError] = useState("");
   
   // State for User Data
@@ -46,10 +48,10 @@ export default function LoginForm() {
     e.preventDefault(); 
     console.log("Attempting Login..."); 
 
-    // 1. HARDCODED ADMIN CHECK (PRIORITY)
+    // 1. HARDCODED ADMIN CHECK
     if(loginData.identifier.trim() === "admin" && loginData.password === "123") {
         console.log("Admin Logged In!");
-        setCurrentUser("admin"); // Updated to match SQL database username 'admin'
+        setCurrentUser("admin");
         setIsAdmin(true); 
         setHomePage(true);
         return; 
@@ -57,7 +59,6 @@ export default function LoginForm() {
 
     // 2. STANDARD USER LOGIN (BACKEND)
     const isEmail = loginData.identifier.includes('@');
-    
     const payload = {
         password: loginData.password,
         ...(isEmail ? { email: loginData.identifier } : { username: loginData.identifier })
@@ -70,9 +71,7 @@ export default function LoginForm() {
             body: JSON.stringify(payload),
         });
 
-        // --- THIS WAS LIKELY MISSING IN YOUR CODE ---
         const data = await response.json(); 
-        // -------------------------------------------
 
         if (response.ok) {
             setCurrentUser(data.username);
@@ -89,15 +88,7 @@ export default function LoginForm() {
     }
   };
 
-  const signUpclick = () => {
-    setSignup(true)
-  }
-  
-  const placeholderClick = () => {
-    console.log("Feature coming soon!");
-  };
-
-  // --- RENDER HOMEPAGE IF LOGGED IN ---
+  // --- RENDER CONDITIONALS ---
   if (showHomePage) {
     return (
         <Homepage 
@@ -113,8 +104,10 @@ export default function LoginForm() {
     );
   }
   
-  if (showsignup){
-    return <SignUp/>;
+  if (showsignup) return <SignUp />;
+
+  if (showForgotPassword) {
+    return <ForgotPassword onBack={() => setShowForgotPassword(false)} />;
   }
 
   // --- RENDER LOGIN FORM ---
@@ -128,70 +121,72 @@ export default function LoginForm() {
       <div className="relative z-10 w-full max-w-sm md:max-w-md 2xl:max-w-4xl flex flex-col items-center transition-all duration-300">
         
         {/* LOGO AREA */}
-        <div className="mb-8 md:mb-10 2xl:mb-[-10] text-center relative flex flex-col items-center">
+        <div className="mb-16 md:mb-12 text-center relative flex flex-col items-center">
           <img 
             src="/images/logo.png" 
             alt="Adrenaline Hub Logo"
-            className="relative z-20 w-48 md:w-64 2xl:w-[800px] mx-auto drop-shadow-lg transition-all" 
-          />
-          <div className="absolute z-10 bottom-[60px] 2xl:bottom-[60px] w-[140px] md:w-[450px] 2xl:w-[450px] h-[25px] 2xl:h-[50px] bg-white/20 rounded-[100%] blur-md" />
+           className="relative z-20 w-64 md:w-80 2xl:w-[500px] mx-auto drop-shadow-lg transition-all" 
+  />
+          
+         <div className="absolute z-10 bottom-[35px] w-[200px] md:w-[350px] 2xl:w-[600px] h-[30px] md:h-[40px] 2xl:h-[60px] bg-white/20 rounded-[100%] blur-xl" />
+
         </div>
 
         {/* INPUT CONTAINER */}
-        <div className="w-full space-y-4 md:space-y-6 2xl:space-y-12">
+        <div className="w-full space-y-4 md:space-y-6">
           
-          <div className="bg-[#1f2937]/80 backdrop-blur-sm rounded-xl p-4 2xl:p-8 border border-white/10 shadow-lg">
-            <p className="text-gray-400 text-sm md:text-base 2xl:text-2xl font-medium mb-1">Email address / Username</p>
+          <div className="bg-[#1f2937]/80 backdrop-blur-sm rounded-xl p-4 border border-white/10 shadow-lg">
+            <p className="text-gray-400 text-sm font-medium mb-1">Email address / Username</p>
             <input 
               type="text" 
               name="identifier"  
               value={loginData.identifier} 
               onChange={handleChange} 
               placeholder="name@example.com or username" 
-              className="bg-transparent w-full text-white outline-none text-base md:text-xl 2xl:text-4xl placeholder-gray-500" 
+              className="bg-transparent w-full text-white outline-none text-base md:text-xl placeholder-gray-500" 
             />
           </div>
           
-          <div className="bg-[#1f2937]/80 backdrop-blur-sm rounded-xl p-4 2xl:p-8 border border-white/10 shadow-lg">
-            <p className="text-gray-400 text-sm md:text-base 2xl:text-2xl font-medium mb-1">Password</p>
+          <div className="bg-[#1f2937]/80 backdrop-blur-sm rounded-xl p-4 border border-white/10 shadow-lg">
+            <p className="text-gray-400 text-sm font-medium mb-1">Password</p>
             <input 
               type="password" 
               name="password"
               value={loginData.password} 
               onChange={handleChange} 
               placeholder="••••••••" 
-              className="bg-transparent w-full text-white outline-none text-base md:text-xl 2xl:text-4xl placeholder-gray-500" 
+              className="bg-transparent w-full text-white outline-none text-base md:text-xl placeholder-gray-500" 
             />
           </div>
 
-          <div className="flex">
-            <u 
-                onClick={placeholderClick}
-                className="text-[blue] text-[24px] ml-5 mt-3 cursor-pointer"
+          <div className="flex justify-start px-2">
+            <button 
+                onClick={() => setShowForgotPassword(true)}
+                className="text-cyan-400 text-sm md:text-base font-bold underline cursor-pointer hover:text-white transition-colors"
             >
-                Forgot Password
-            </u>
-          </div>
-
-         <button
-         onClick={handleLogin}  
-         className="p-4 2xl:p-8 w-full text-base md:text-xl 2xl:text-4xl bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 rounded-xl shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all">
-                Login
+                Forgot Password?
             </button>
+          </div>
 
-          <div className="flex items-center gap-4 py-2 2xl:py-4">
+          <button
+            onClick={handleLogin}  
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 rounded-xl shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all"
+          >
+            Login
+          </button>
+
+          <div className="flex items-center gap-4 py-2">
             <div className="h-px bg-white/20 flex-1" />
-            <span className="text-gray-400 text-sm md:text-lg 2xl:text-2xl font-medium">OR</span>
+            <span className="text-gray-400 text-xs font-bold tracking-widest">OR</span>
             <div className="h-px bg-white/20 flex-1" />
           </div>
 
-          {/* Sign Up Button */}
-          <div>
-           <button
-             onClick={signUpclick}
-             className= "p-4 2xl:p-8 w-full text-base md:text-xl 2xl:text-4xl bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 rounded-xl shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all"
-             >SignUp</button>
-          </div>
+          <button
+             onClick={() => setSignup(true)}
+             className="w-full bg-transparent border border-white/20 hover:bg-white/5 text-white font-bold py-4 rounded-xl transition-all"
+          >
+            Create Account
+          </button>
 
         </div>
       </div>

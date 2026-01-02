@@ -1,7 +1,14 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Product } from '@/app/data/Product';
 import { getBeastTheme } from '@/components/Beastmode/page';
+
+// Helper to ensure we only work with numbers (removes $ or other symbols)
+const getNumericPrice = (price) => {
+    if (typeof price === 'number') return price;
+    const match = price.toString().replace(/[^0-9.]/g, ''); 
+    return match ? parseFloat(match) : 0;
+};
 
 export default function PopularItems({ isBeastMode, setSelectedProduct }) {
     const [activeSlide, setActiveSlide] = useState(0);
@@ -19,35 +26,65 @@ export default function PopularItems({ isBeastMode, setSelectedProduct }) {
     }, []);
 
     return (
-        <div className="space-y-6 mb-16">
-            {/* Added theme.text for consistent branding on the heading */}
-            <h2 className="text-xl md:text-2xl font-bold italic text-white uppercase">
-                Popular <span className={theme.text}>Gear</span>
-            </h2>
-            <div className="flex w-full h-[300px] md:h-[400px] gap-4">
-                {popularProducts.map((item, index) => (
-                    <div 
-                        key={item.id} 
-                        onClick={() => setActiveSlide(index)} 
-                        className={`relative rounded-[20px] bg-cover bg-center cursor-pointer transition-[flex] duration-700 ease-in-out group overflow-hidden ${activeSlide === index ? `flex-[5] shadow-2xl border-white/20 border` : 'flex-[1] opacity-60'}`} 
-                        style={{ backgroundImage: `url('${item.image}')` }}
-                    >
-                        {/* Darker overlay to help text pop */}
-                        <div className={`absolute inset-0 bg-black/40 transition-colors duration-500 ${activeSlide === index ? 'bg-black/20' : 'group-hover:bg-black/30'}`}></div>
-                        
-                        <div className={`absolute bottom-0 left-0 p-8 transition-all duration-500 ${activeSlide === index ? 'opacity-100' : 'opacity-0'}`}>
-                            {/* Added drop-shadow-md for readability on bright images */}
-                            <h3 className="text-white text-3xl font-black italic uppercase drop-shadow-md">{item.name}</h3>
-                            <p className="text-white font-bold mb-4 drop-shadow-md">₱{item.price.toLocaleString()}</p>
-                            <button 
-                                onClick={(e) => {e.stopPropagation(); setSelectedProduct(item);}} 
-                                className="bg-white/20 px-4 py-2 rounded-full text-xs font-bold text-white backdrop-blur-md hover:bg-white/40 transition-all"
-                            >
-                                Quick View
-                            </button>
+        <div className="space-y-8 mb-20">
+            {/* Added more space above the heading and a decorative accent */}
+            <div className="flex items-center gap-4">
+                <div className={`h-8 w-2 ${isBeastMode ? 'bg-red-600' : 'bg-cyan-500'} rounded-full`}></div>
+                <h2 className="text-2xl md:text-4xl font-black italic text-white uppercase tracking-tighter">
+                    Popular <span className={theme.text}>Gear</span>
+                </h2>
+            </div>
+
+            <div className="flex w-full h-[350px] md:h-[450px] gap-4">
+                {popularProducts.map((item, index) => {
+                    // Logic to fix currency and apply Beast Mode discount (15%)
+                    const basePrice = getNumericPrice(item.price);
+                    const finalPrice = isBeastMode ? Math.floor(basePrice * 0.85) : basePrice;
+
+                    return (
+                        <div 
+                            key={item.id} 
+                            onClick={() => setActiveSlide(index)} 
+                            className={`relative rounded-[32px] bg-cover bg-center cursor-pointer transition-all duration-700 ease-in-out group overflow-hidden ${
+                                activeSlide === index 
+                                ? `flex-[5] shadow-2xl border-2 ${isBeastMode ? 'border-red-500/50' : 'border-cyan-400/50'}` 
+                                : 'flex-[1] opacity-40 grayscale hover:opacity-100 hover:grayscale-0'
+                            }`} 
+                            style={{ backgroundImage: `url('${item.image}')` }}
+                        >
+                            {/* Overlay for readability */}
+                            <div className={`absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent transition-opacity duration-500 ${activeSlide === index ? 'opacity-100' : 'opacity-0'}`}></div>
+                            
+                            <div className={`absolute bottom-0 left-0 p-10 w-full transition-all duration-500 ${activeSlide === index ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+                                <h3 className="text-white text-3xl md:text-5xl font-black italic uppercase tracking-tighter drop-shadow-2xl mb-2">
+                                    {item.name}
+                                </h3>
+                                
+                                <div className="flex items-center gap-4 mb-6">
+                                    <p className={`text-2xl font-black ${isBeastMode ? 'text-red-500' : 'text-cyan-400'} drop-shadow-md`}>
+                                        ₱{finalPrice.toLocaleString()}
+                                    </p>
+                                    {isBeastMode && (
+                                        <p className="text-gray-500 line-through text-sm font-bold">
+                                            ₱{basePrice.toLocaleString()}
+                                        </p>
+                                    )}
+                                </div>
+
+                                <button 
+                                    onClick={(e) => {e.stopPropagation(); setSelectedProduct(item);}} 
+                                    className={`px-8 py-3 rounded-full text-sm font-black uppercase tracking-widest backdrop-blur-md transition-all border-2 ${
+                                        isBeastMode 
+                                        ? 'bg-red-600/20 border-red-600 text-white hover:bg-red-600' 
+                                        : 'bg-cyan-500/20 border-cyan-400 text-white hover:bg-cyan-500'
+                                    }`}
+                                >
+                                    Quick View
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
         </div>
     );
