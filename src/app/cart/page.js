@@ -63,7 +63,7 @@ const CartPage = ({ onBack, cartItems, onRemoveItem, onCheckout }) => {
                             </div>
                             <div className="flex justify-between items-center w-full mt-2">
                                 <span className="bg-white/10 px-2 py-0.5 rounded text-xs">Qty: {item.quantity || 1}</span>
-                                <p className="font-bold text-white">${itemTotal.toFixed(2)}</p>
+                                <p className="font-bold text-white">₱{itemTotal.toFixed(2)}</p>
                             </div>
                         </div>
                     </div>
@@ -72,7 +72,7 @@ const CartPage = ({ onBack, cartItems, onRemoveItem, onCheckout }) => {
             </div>
             <div className="w-full max-w-2xl flex justify-between items-center px-4 pt-4 border-t border-white/10">
                  <span className="text-gray-400">Subtotal</span>
-                 <span className="text-3xl font-bold text-cyan-400">${subtotal.toFixed(2)}</span>
+                 <span className="text-3xl font-bold text-cyan-400">₱{subtotal.toFixed(2)}</span>
             </div>
             <div className="flex flex-col sm:flex-row gap-4 w-full max-w-2xl pt-4">
                 {onBack && (

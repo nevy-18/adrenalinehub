@@ -27,7 +27,7 @@ export default function LoginForm() {
   
   // State for User Data
   const [currentUser, setCurrentUser] = useState(""); 
-  const [isAdmin, setIsAdmin] = useState(false); // <--- New Admin State
+  const [isAdmin, setIsAdmin] = useState(false); 
 
   const [loginData, setLoginData] = useState({
     identifier: '', 
@@ -47,13 +47,11 @@ export default function LoginForm() {
     console.log("Attempting Login..."); 
 
     // 1. HARDCODED ADMIN CHECK (PRIORITY)
-    // Trim removes accidental spaces
     if(loginData.identifier.trim() === "admin" && loginData.password === "123") {
         console.log("Admin Logged In!");
-        setCurrentUser("Administrator");
-        setIsAdmin(true); // Flag as Admin
+        setCurrentUser("admin"); // Updated to match SQL database username 'admin'
+        setIsAdmin(true); 
         setHomePage(true);
-        // We return early so we don't try to fetch from the backend
         return; 
     }
 
@@ -72,11 +70,13 @@ export default function LoginForm() {
             body: JSON.stringify(payload),
         });
 
-        const data = await response.json();
+        // --- THIS WAS LIKELY MISSING IN YOUR CODE ---
+        const data = await response.json(); 
+        // -------------------------------------------
 
         if (response.ok) {
             setCurrentUser(data.username);
-            setIsAdmin(false); // Ensure regular user is NOT admin
+            setIsAdmin(false); 
             alert("SUCCESS: " + data.message);
             setHomePage(true);
         } else {
@@ -99,7 +99,6 @@ export default function LoginForm() {
 
   // --- RENDER HOMEPAGE IF LOGGED IN ---
   if (showHomePage) {
-    // We pass the 'isAdmin' flag to the Homepage component
     return (
         <Homepage 
             onLogout={() => { 
@@ -109,7 +108,7 @@ export default function LoginForm() {
                 setLoginData({ identifier: '', password: '' });
             }} 
             username={currentUser} 
-            isAdmin={isAdmin} // <--- Passing the prop here
+            isAdmin={isAdmin} 
         />
     );
   }
@@ -135,7 +134,6 @@ export default function LoginForm() {
             alt="Adrenaline Hub Logo"
             className="relative z-20 w-48 md:w-64 2xl:w-[800px] mx-auto drop-shadow-lg transition-all" 
           />
-          {/* Platform Glow */}
           <div className="absolute z-10 bottom-[60px] 2xl:bottom-[60px] w-[140px] md:w-[450px] 2xl:w-[450px] h-[25px] 2xl:h-[50px] bg-white/20 rounded-[100%] blur-md" />
         </div>
 

@@ -42,7 +42,7 @@ export default function CheckoutView({ onBack, checkoutData }) {
                             <p className="font-bold leading-tight text-sm">{item.name}</p>
                             <p className="text-xs text-gray-400 mt-1">Opt: <span className="text-white">{item.selectedSize || "Default"}</span></p>
                             <p className="text-xs text-gray-400">Qty: <span className="text-white">{item.quantity}</span></p>
-                             <p className="text-xs text-cyan-400 mt-1">${item.price}</p>
+                             <p className="text-xs text-cyan-400 mt-1">₱{item.price}</p>
                         </div>
                     </div>
                 ))}
@@ -52,7 +52,7 @@ export default function CheckoutView({ onBack, checkoutData }) {
         {/* TOTAL */}
         <div className="mb-6 pt-4 border-t border-gray-600 flex justify-between text-xl font-bold">
             <span>Total to Pay:</span>
-            <span className="text-cyan-400">${totalAmount.toFixed(2)}</span>
+            <span className="text-cyan-400">₱{totalAmount.toFixed(2)}</span>
         </div>
 
         {/* Payment Form (Visual Only) */}
@@ -60,7 +60,7 @@ export default function CheckoutView({ onBack, checkoutData }) {
             <input type="text" placeholder="Full Name" className="w-full p-3 bg-gray-900 rounded-xl border border-gray-700 text-white focus:border-cyan-500 outline-none" />
             <input type="text" placeholder="Card Number" className="w-full p-3 bg-gray-900 rounded-xl border border-gray-700 text-white focus:border-cyan-500 outline-none" />
             <button type="button" className="w-full bg-green-500 hover:bg-green-400 text-black font-bold py-4 rounded-xl shadow-[0_0_15px_rgba(34,197,94,0.4)] mt-4 transition-transform active:scale-95">
-                PAY ${totalAmount.toFixed(2)}
+                PAY ₱{totalAmount.toFixed(2)}
             </button>
         </form>
 

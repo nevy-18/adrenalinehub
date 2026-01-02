@@ -5,8 +5,9 @@ import { X, Star, ShoppingCart, Scale } from 'lucide-react';
 // --- HELPERS ---
 const getNumericPrice = (price) => {
     if (typeof price === 'number') return price;
-    const match = price.toString().match(/(\d+)/);
-    return match ? parseInt(match[0]) : 0;
+    // Updated regex to strip ANY non-numeric characters (₱, $, commas)
+    const match = price.toString().replace(/[^0-9.]/g, '');
+    return match ? parseFloat(match) : 0;
 };
 
 const calculateFinalPrice = (originalPrice, isBeastMode) => {
@@ -26,9 +27,14 @@ const QuickViewModal = ({ product, onClose, onAddToCart, onBuyNow, compareList, 
   const btnColor = isBeastMode ? "bg-red-600 hover:bg-red-500" : "bg-cyan-500 hover:bg-cyan-400";
 
   // Compare Logic
-  const isComparing = compareList.some(p => p.id === product.id);
+  const isComparing = compareList ? compareList.some(p => p.id === product.id) : false;
 
-  const parsePrice = (priceInput) => { if (priceInput === undefined || priceInput === null) return 0; if (typeof priceInput === 'number') return priceInput; const match = priceInput.toString().match(/(\d+)/); return match ? parseInt(match[0]) : 0; };
+  const parsePrice = (priceInput) => { 
+      if (priceInput === undefined || priceInput === null) return 0; 
+      if (typeof priceInput === 'number') return priceInput; 
+      const match = priceInput.toString().replace(/[^0-9.]/g, ''); 
+      return match ? parseFloat(match) : 0; 
+  };
   
   // Calculate Prices
   const currentPrice = selectedVariant && selectedVariant.price !== undefined ? parsePrice(selectedVariant.price) : parsePrice(product.price);
@@ -39,8 +45,28 @@ const QuickViewModal = ({ product, onClose, onAddToCart, onBuyNow, compareList, 
   const isUrl = (str) => str && (str.includes('http') || str.includes('/') || str.includes('.'));
 
   // Handlers
-  const handleAddToCart = () => { onAddToCart({ ...product, price: finalPrice, image: currentImage, selectedSize: selectedVariant ? selectedVariant.name : "One Size", quantity }); onClose(); };
-  const handleBuy = () => { onBuyNow({ id: Math.floor(Math.random() * 10000).toString(), items: product.name, price: finalPrice * quantity, image: currentImage, selectedSize: selectedVariant ? selectedVariant.name : "One Size", quantity: quantity, date: new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: '2-digit' }), status: "Processing", deliveryDate: "Pending" }); onClose(); };
+  const handleAddToCart = () => { 
+      onAddToCart({ 
+          ...product, 
+          price: finalPrice, 
+          image: currentImage, 
+          selectedSize: selectedVariant ? selectedVariant.name : "One Size", 
+          quantity 
+      }); 
+      onClose(); 
+  };
+
+  const handleBuy = () => { 
+      onBuyNow({ 
+          id: product.id, 
+          name: product.name, 
+          price: finalPrice, 
+          image: currentImage, 
+          selectedSize: selectedVariant ? selectedVariant.name : "One Size", 
+          quantity: quantity, 
+      }); 
+      onClose(); 
+  };
 
   return (
     <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
@@ -68,8 +94,9 @@ const QuickViewModal = ({ product, onClose, onAddToCart, onBuyNow, compareList, 
           )}
           
           <div className="flex items-end gap-4 mb-8 border-b border-gray-700 pb-8">
-              <span key={finalPrice} className={`text-4xl font-bold ${isBeastMode ? 'text-red-500 animate-pulse' : 'text-white'}`}>${finalPrice}</span>
-              <span className="text-gray-500 line-through mb-1 text-lg">${originalPrice}</span>
+              {/* FIXED: Peso Symbol and Formatting */}
+              <span key={finalPrice} className={`text-4xl font-bold ${isBeastMode ? 'text-red-500 animate-pulse' : 'text-white'}`}>₱{finalPrice.toLocaleString()}</span>
+              <span className="text-gray-500 line-through mb-1 text-lg">₱{originalPrice.toLocaleString()}</span>
           </div>
           
           <div className="flex flex-col gap-4">
@@ -79,7 +106,6 @@ const QuickViewModal = ({ product, onClose, onAddToCart, onBuyNow, compareList, 
               </div>
               <button onClick={handleAddToCart} className="w-full bg-transparent border border-gray-600 hover:border-white text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-all hover:bg-white/5"><ShoppingCart className="w-5 h-5" /> Add to Cart</button>
               
-              {/* --- COMPARE BUTTON (INSIDE MODAL) --- */}
               <button 
                 onClick={() => { onClose(); onOpenCompare(product.id); }}
                 className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold border transition-all ${isComparing ? (isBeastMode ? 'bg-red-500/20 border-red-500 text-red-400' : 'bg-cyan-500/20 border-cyan-500 text-cyan-400') : 'border-gray-700 text-gray-400 hover:border-gray-500 hover:text-white'}`}

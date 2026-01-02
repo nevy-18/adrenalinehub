@@ -1,63 +1,74 @@
 'use client';
-import React from 'react';
-import { ArrowLeft, TrendingUp, Users, Package, LayoutDashboard } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowLeft, TrendingUp, Users, Package, LayoutDashboard, Loader2, CheckCircle } from 'lucide-react';
 
 const AdminDashboard = ({ onBack, username }) => {
-    const stats = [
-        { label: "Total Revenue", value: "$124,592", icon: TrendingUp, color: "text-green-400", bg: "bg-green-400/10" },
-        { label: "Active Users", value: "1,842", icon: Users, color: "text-blue-400", bg: "bg-blue-400/10" },
-        { label: "Pending Orders", value: "34", icon: Package, color: "text-orange-400", bg: "bg-orange-400/10" },
-    ];
-    const recentOrders = [
-        { id: "#ORD-9921", user: "John Doe", items: "Olympic Barbell", status: "Pending", amount: "$299" },
-        { id: "#ORD-9922", user: "Jane Smith", items: "Yoga Mat Pro", status: "Shipped", amount: "$45" },
-        { id: "#ORD-9923", user: "Mike Ross", items: "Dumbbell Set", status: "Delivered", amount: "$150" },
+    const [stats, setStats] = useState(null);
+    const [orders, setOrders] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    const fetchData = async () => {
+        try {
+            const [sRes, oRes] = await Promise.all([
+                fetch('http://localhost:3001/admin/stats'),
+                fetch('http://localhost:3001/admin/all-orders')
+            ]);
+            setStats(await sRes.json());
+            setOrders(await oRes.json());
+        } catch (e) { console.error(e); } finally { setLoading(false); }
+    };
+
+    useEffect(() => { fetchData(); }, []);
+
+    const completeOrder = async (id) => {
+        await fetch(`http://localhost:3001/admin/orders/${id}/complete`, { method: 'PATCH' });
+        fetchData();
+    };
+
+    if (loading) return <div className="h-96 flex items-center justify-center"><Loader2 className="animate-spin text-cyan-400" /></div>;
+
+    const cards = [
+        { label: "Revenue", val: `₱${Number(stats?.totalRevenue || 0).toLocaleString()}`, icon: TrendingUp, color: "text-green-400" },
+        { label: "Users", val: stats?.totalUsers || 0, icon: Users, color: "text-blue-400" },
+        { label: "Pending", val: stats?.pendingOrders || 0, icon: Package, color: "text-orange-400" },
     ];
 
     return (
-        <div className="animate-in fade-in slide-in-from-right-4 duration-300 w-full max-w-7xl mx-auto pb-10">
-            <button onClick={onBack} className="text-xl md:text-2xl flex items-center gap-2 text-cyan-400 hover:text-white mb-8 transition-colors">
-                <ArrowLeft className="w-6 h-6" /> Back to Shop
-            </button>
-            <div className="flex flex-col md:flex-row justify-between items-end mb-8 border-b border-white/10 pb-6">
-                <div>
-                    <h1 className="text-4xl font-black italic text-white uppercase tracking-wider">Admin <span className="text-cyan-400">Dashboard</span></h1>
-                    <p className="text-gray-400 mt-2">Welcome back, {username}.</p>
-                </div>
-                <button className="bg-cyan-500 hover:bg-cyan-400 text-[#1a1a40] font-bold py-2 px-6 rounded-xl transition-all shadow-[0_0_15px_rgba(34,211,238,0.4)]">Add New Product</button>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                {stats.map((stat, idx) => (
-                    <div key={idx} className="bg-[#1f2937]/60 border border-white/5 p-6 rounded-2xl flex items-center gap-6 shadow-lg">
-                        <div className={`p-4 rounded-xl ${stat.bg} ${stat.color}`}><stat.icon className="w-8 h-8" /></div>
-                        <div><p className="text-gray-400 text-sm font-bold uppercase">{stat.label}</p><h3 className="text-3xl font-black text-white">{stat.value}</h3></div>
+        <div className="max-w-7xl mx-auto p-10 animate-in fade-in">
+            <button onClick={onBack} className="text-cyan-400 flex items-center gap-2 mb-8"><ArrowLeft /> BACK</button>
+            <h1 className="text-4xl font-black italic uppercase mb-8">Admin <span className="text-cyan-400">Dashboard</span></h1>
+            
+            <div className="grid grid-cols-3 gap-6 mb-10">
+                {cards.map((c, i) => (
+                    <div key={i} className="bg-[#1f2937] p-6 rounded-2xl border border-white/5 flex items-center gap-6">
+                        <div className={`p-4 rounded-xl bg-white/5 ${c.color}`}><c.icon /></div>
+                        <div><p className="text-gray-400 text-xs uppercase font-bold">{c.label}</p><h3 className="text-3xl font-black">{c.val}</h3></div>
                     </div>
                 ))}
             </div>
-            <div className="bg-[#1f2937]/80 backdrop-blur-sm rounded-3xl border border-white/10 overflow-hidden shadow-2xl">
-                <div className="p-6 border-b border-white/5 flex justify-between items-center">
-                    <h3 className="text-xl font-bold text-white flex items-center gap-2"><LayoutDashboard className="w-5 h-5 text-cyan-400" /> Recent Orders</h3>
-                </div>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm text-gray-300">
-                        <thead className="bg-white/5 text-gray-400 text-xs uppercase font-bold">
-                            <tr><th className="p-4">Order ID</th><th className="p-4">Customer</th><th className="p-4">Items</th><th className="p-4">Status</th><th className="p-4 text-right">Amount</th></tr>
-                        </thead>
-                        <tbody className="divide-y divide-white/5">
-                            {recentOrders.map((order, idx) => (
-                                <tr key={idx} className="hover:bg-white/5 transition-colors">
-                                    <td className="p-4 font-mono text-cyan-400">{order.id}</td>
-                                    <td className="p-4 font-bold text-white">{order.user}</td>
-                                    <td className="p-4">{order.items}</td>
-                                    <td className="p-4"><span className={`px-3 py-1 rounded-full text-xs font-bold ${order.status === 'Delivered' ? 'bg-green-500/20 text-green-400' : 'bg-orange-500/20 text-orange-400'}`}>{order.status}</span></td>
-                                    <td className="p-4 text-right font-bold text-white">{order.amount}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+
+            <div className="bg-[#1f2937] rounded-3xl border border-white/10 overflow-hidden shadow-2xl">
+                <table className="w-full text-left text-sm">
+                    <thead className="bg-white/5 text-gray-400 uppercase font-bold">
+                        <tr><th className="p-4">ID</th><th className="p-4">User</th><th className="p-4">Status</th><th className="p-4 text-right">Amount</th><th className="p-4">Action</th></tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/5">
+                        {orders.map((o) => (
+                            <tr key={o.id} className="hover:bg-white/5 transition-colors">
+                                <td className="p-4 font-mono text-cyan-400">#{o.id}</td>
+                                <td className="p-4 font-bold">{o.user}</td>
+                                <td className="p-4"><span className={`px-3 py-1 rounded-full text-[10px] font-bold ${o.status === 'Delivered' ? 'bg-green-500/20 text-green-400' : 'bg-orange-500/20 text-orange-400'}`}>{o.status}</span></td>
+                                <td className="p-4 text-right font-bold">₱{o.amount}</td>
+                                <td className="p-4">
+                                    {o.status === 'Processing' && <button onClick={()=>completeOrder(o.id)} className="bg-green-500 text-black px-3 py-1 rounded-lg text-[10px] font-bold">Complete</button>}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
         </div>
     );
 };
+
 export default AdminDashboard;

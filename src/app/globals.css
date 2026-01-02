@@ -6,13 +6,9 @@
   --bg-gradient: #ffffff;
 }
 
-
-
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg-gradient:linear-gradient(to bottom, #25215C 22%,#0FCFD1)
-    
-
+    --bg-gradient: linear-gradient(to bottom, #25215C 22%, #0FCFD1);
   }
 }
 
@@ -21,4 +17,52 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
   min-height: 100vh;
+}
+
+/* --- NEW SETTINGS EFFECTS --- */
+
+/* 1. Cyber Scanlines Effect */
+.scanlines-active::before {
+  content: " ";
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+              linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+  z-index: 9999;
+  background-size: 100% 3px, 3px 100%;
+  pointer-events: none; /* Crucial: allows clicking through to the app */
+  opacity: 0.6;
+}
+
+/* 2. Flicker animation for the scanlines */
+@keyframes flicker {
+  0% { opacity: 0.55; }
+  50% { opacity: 0.45; }
+  100% { opacity: 0.55; }
+}
+
+.scanlines-active::after {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(18, 16, 16, 0.05);
+  opacity: 0;
+  z-index: 10000;
+  pointer-events: none;
+  animation: flicker 0.1s infinite;
+}
+
+/* 3. Performance HUD Animation */
+@keyframes pulse-border {
+  0% { border-color: rgba(15, 207, 209, 0.5); }
+  50% { border-color: rgba(15, 207, 209, 1); }
+  100% { border-color: rgba(15, 207, 209, 0.5); }
+}
+
+.hud-pulse {
+  animation: pulse-border 2s infinite;
 }
